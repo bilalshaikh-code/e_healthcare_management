@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Appointments - E-Health Care</title>
+
+    <!-- Tailwind CSS CDN (with forms & typography plugins) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        success: '#10b981',
+                        pending: '#f59e0b',
+                        cancelled: '#ef4444',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .status-completed { @apply bg-success text-white; }
+        .status-cancelled { @apply bg-cancelled text-white; }
+        .status-booked,
+        .status-confirmed { @apply bg-pending text-white; }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-900 text-white">
+    <div class="container max-w-6xl mx-auto py-12 px-4">
+
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-3">Your Current Appointments</h1>
+            <p class="text-slate-400">Upcoming and booked consultations</p>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gradient-to-r from-primary to-blue-600 text-white">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Appointment ID</th>
+                            <th class="px-6 py-4 font-semibold">Date</th>
+                            <th class="px-6 py-4 font-semibold">Doctor</th>
+                            <th class="px-6 py-4 font-semibold">Time Slot</th>
+                            <th class="px-6 py-4 font-semibold">Fees</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for i in current %}
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-5 font-medium text-gray-900">#{{ i.id }}</td>
+                            <td class="px-6 py-5 text-gray-700">{{ i.date|date:"d M Y" }}</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    {% if i.doctorid.profile.image %}
+                                        <img src="{{ i.doctorid.profile.image.url }}" alt="Dr. {{ i.doctorid.get_full_name }}"
+                                             class="w-10 h-10 rounded-full object-cover border-2 border-gray-300">
+                                    {% else %}
+                                        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">
+                                            {{ i.doctorid.get_full_name|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <span class="font-medium text-gray-900">Dr. {{ i.doctorid.get_full_name|default:i.doctorid.user.username }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5 text-gray-700">{{ i.slotid.slot_time }}</td>
+                            <td class="px-6 py-5 font-bold text-primary">₹{{ i.doctorid.fees }}</td>
+                            <td class="px-6 py-5">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                    {% if i.status == 'Completed' %}status-completed
+                                    {% elif i.status == 'Cancelled' %}status-cancelled
+                                    {% else %}status-booked{% endif %}">
+                                    {{ i.get_status_display|default:i.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                {% if i.status not in 'Cancelled,Completed' %}
+                                    <form method="post" action="{% url 'ongoing' %}" class="inline"
+                                          onsubmit="return confirm('Are you sure you want to cancel appointment #{{ i.id }}?')">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="actioncnl" value="{{ i.id }}">
+                                        <button type="submit"
+                                                class="px-4 py-2 bg-danger hover:bg-red-600 text-white text-sm font-medium rounded-lg transition">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-gray-400 text-sm">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-500 text-lg">
+                                No upcoming appointments at the moment.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-10">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 underline text-lg">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>

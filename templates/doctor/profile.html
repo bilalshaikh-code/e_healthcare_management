@@ -1,0 +1,53 @@
+{% extends "doctor/base.html" %}
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+        <div class="topbar d-flex justify-content-between">
+            <h2>My Profile</h2>
+            <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline-primary">Back to Dashboard</a>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-4">
+                <div class="card text-center p-3">
+                    <img src="{{doctor.user.image}}" 
+                         class="rounded-circle mb-3" width="150" height="150">
+                    <h4>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h4>
+                    <p>{{ doctor.speciality.name }}</p>
+                    <p>{{ doctor.user.email }}</p>
+                    <p>{{ doctor.user.mobile_number }}</p>
+                    <p>{{ doctor.user.address }}</p>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card p-3">
+                    <h5>Appointments History</h5>
+                    <table class="table table-striped mt-2">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr>
+                                <td>{{ appt.patient.full_name }}</td>
+                                <td>{{ appt.date|date:"M d, Y" }}</td>
+                                <td>{{ appt.time|time:"H:i" }}</td>
+                                <td>{{ appt.status }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No appointments yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+{% endblock %}

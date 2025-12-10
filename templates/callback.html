@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    Your Transaction Receipt/Slip
+    <br>
+    <br>
+    Your Name: {{payment_obj.name}}
+    <br>
+    Your Amount: {{payment_obj.amount}}
+    <br>
+    Your Order ID: {{payment_obj.razor_pay_order_id}}
+    <br>
+    Your Payment ID: {{payment_obj.razor_pay_payment_id}}
+    <br>
+    Your Payment Status: {{payment_obj.status}}
+    <br>
+    Your Payment Date and Time: {{payment_obj.created_at}}
+    <br>
+</body>
+</html>

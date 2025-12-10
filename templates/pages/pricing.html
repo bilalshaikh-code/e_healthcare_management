@@ -1,0 +1,89 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Pricing Plans - HealthPlus Hospital{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-header bg-primary text-white py-6 text-center">
+    <div class="container p-3">
+        <h1 class="display-3 fw-bold mb-3">Medical Packages</h1>
+        <p class="lead fs-4">Affordable Healthcare Plans for Every Family</p>
+    </div>
+</section>
+
+<!-- Pricing Carousel -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mx-auto mb-5" style="max-width: 600px;">
+            <h5 class="text-primary text-uppercase fw-bold mb-2 border-bottom border-5 border-primary d-inline-block pb-2">Medical Packages</h5>
+            <h2 class="fw-bold mb-2">Choose Your Health Plan</h2>
+            <p class="text-muted">Comprehensive coverage with world-class care at unbeatable prices</p>
+        </div>
+
+        <div class="owl-carousel price-carousel">
+            {% comment %} Example pricing item {% endcomment %}
+            <div class="pricing-item bg-white rounded shadow overflow-hidden">
+                <div class="position-relative">
+                    <img src="{% static 'img/price-1.jpg' %}" class="img-fluid w-100" style="height: 280px; object-fit: cover;" alt="Pregnancy Care">
+                    <div class="position-absolute top-50 start-50 translate-middle text-center text-white w-100" style="background: rgba(0,0,0,0.7); padding:40px 20px;">
+                        <h3 class="text-primary mb-3">Pregnancy Care</h3>
+                        <h1 class="display-4 mb-0">
+                            <small class="fs-3">$</small>49
+                            <small class="fs-6 text-white-50">/ Year</small>
+                        </h1>
+                    </div>
+                </div>
+                <div class="p-5 text-center">
+                    <ul class="list-unstyled mb-4">
+                        <li class="py-2"><i class="fa fa-check text-primary me-3"></i>Emergency Medical Treatment</li>
+                        <li class="py-2"><i class="fa fa-check text-primary me-3"></i>9 Months Full Coverage</li>
+                        <li class="py-2"><i class="fa fa-check text-primary me-3"></i>Free Ultrasound Scans</li>
+                        <li class="py-2"><i class="fa fa-check text-primary me-3"></i>24/7 Gynecologist Support</li>
+                    </ul>
+                    <a href="{% url 'appointment' %}" class="btn btn-primary rounded-pill px-5 py-3">Apply Now</a>
+                </div>
+            </div>
+
+            {% comment %} Add additional packages similar to above {% endcomment %}
+            <!-- Repeat similar blocks for other packages -->
+
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="mb-4">Need a Custom Medical Package?</h2>
+        <p class="lead mb-4">We create personalized health plans for families and corporates</p>
+        <a href="{% url 'contact' %}" class="btn btn-light btn-lg rounded-pill px-5 py-3">Contact Us Now</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $(".price-carousel").owlCarousel({
+        loop: true,
+        margin: 30,
+        nav: true,
+        dots: false,
+        autoplay: true,
+        responsive: {
+            0: { items: 1 },
+            768: { items: 2 },
+            992: { items: 3 }
+        }
+    });
+});
+</script>
+{% endblock %}

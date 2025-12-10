@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.invoice {
+    position: relative;
+    background: #fff;
+    border: 10px solid #f4f4f4;
+    padding: 20px;
+    margin: 10px 25px;
+}
+.page-header {
+    margin: 10px 0 20px 0;
+    font-size: 22px;
+}
+table {
+  margin-top: 30px;
+}
+</style>
+</head>
+<body>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+ <form name="vinform"  method="POST" action="{% url 'success' %}" >
+<section class="content content_content" style="width: 70%; margin: auto;">
+    {% csrf_token %}
+ 
+                    <section class="invoice">
+                        <!-- title row -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h2 class="page-header">
+                                    <i class="fa fa-globe"></i>
+                                   <!-- <small class="pull-right">Date: <%= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) %></small> -->
+                                   <small class="pull-right">Date: {{book_appointment.date}}</small>
+
+                                </h2>
+                            </div><!-- /.col -->
+                        </div>
+                        <!-- info row -->
+                        <div class="row invoice-info">
+                            <div class="col-sm-4 invoice-col">
+                                From
+                                <address>
+                                    <strong style="color:black;">Health Plus
+                                                                            </strong>
+                                </address>
+                            </div><!-- /.col -->
+                            <div class="col-sm-4 invoice-col">
+                                To
+                                <address>
+                                    <strong style="color:black;">
+                                         {{book_appointment.patientid.first_name}}                                 </strong>
+                                    <br>
+                                    Address:
+                                     {{book_appointment.patientid.address}}                                  <br>
+                                    Phone:
+                                    {{book_appointment.patientid.mobile_number}}                          <br>
+                                    Email: {{book_appointment.patientid.email}}                              </address>
+                            </div><!-- /.col -->
+                            <div class="col-sm-4 invoice-col">
+                               
+                                <br>
+                                <b style="color:black;">Appointment ID:</b>{{book_appointment.id}}<br>
+                                
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <!-- Table row -->
+                        <div class="row">
+                            <div class="col-xs-12 table-responsive">
+                                <table class="table table-striped">
+                                    <thead >
+                                        <tr>
+                                            <th>appointment id</th>
+                                            <th>Patient name</th>
+                                             <th>Dr name</th>
+                                            <th>fees</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        
+                                        
+                                                                                <tr>
+                                            <td style="color:black;">{{book_appointment.id}}</td>
+                                            <input type="hidden" value="<%=rs.getInt(1) %>" name="appid">
+                                          
+                                            <td style="color:black;">{{book_appointment.patientid.first_name}} {{book_appointment.patientid.last_name}}</td>
+                                            <td style="color:black;">{{book_appointment.doctorid.username}}</td>
+                                            <td style="color:black;" name="fees">{{book_appointment.doctorid.fees}}</td>
+                                            <input type="hidden" value="<%=fees %>" name="fees">
+                                        </tr>
+                                                                            </tbody>
+                                </table>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="row">
+                            <!-- accepted payments column -->
+                            <div class="col-md-12">
+                                
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody>
+                                            
+                                            
+                                            <tr>
+                                                <th style="color:black;">Total:</th>
+                                                <td style="color:black;">{{book_appointment.doctorid.fees}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <!-- this row will not appear when printing -->
+                       <div class="row no-print">
+ 					 <div class="btn mx-auto" style="width: 200px;  margin-top: 30px;">
+   					 <button id="rzp-button1" class="btn btn-success" name="makepayment" value="confirm" type="submit"  style="margin-right: 100px;"><i class="fa fa-credit-card"></i> Submit Payment</button>
+  </div>
+</div>
+                    </section>
+                    
+                     
+                </section>
+                <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="rzp_test_HbVeg2ZkY2GmUI"
+                data-amount="{{amount}}"
+                data-currency="INR"
+                data-order_id="{{payment.id}}"
+                data-name="Health Plus"
+                data-url_root="https://eneqd3r9zrjok.x.pipedream.net/"
+                data-description="Online Appointment Booking"
+                
+                data-theme.color="#F37254">
+        </script>
+                </form>
+</body>
+</html>
+
+{% endblock %}

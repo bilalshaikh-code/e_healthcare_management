@@ -1,0 +1,163 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Give Feedback - HealthPlus Hospital{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.1.2/css/star-rating.min.css" rel="stylesheet">
+
+<style>
+    .feedback-bg {
+        background: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.88)),
+                    url('{% static "img/feedback.jpg" %}') center/cover no-repeat fixed;
+        min-height: 100vh;
+        padding: 80px 20px;
+    }
+    .feedback-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(15px);
+        border-radius: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        padding: 60px 50px;
+        max-width: 750px;
+        margin: 0 auto;
+    }
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .feedback-header h2 {
+        color: #008080;
+        font-weight: bold;
+        font-size: 2.8rem;
+    }
+    .feedback-header p {
+        color: #444;
+        font-size: 1.2rem;
+    }
+    .form-control, textarea {
+        border-radius: 20px;
+        padding: 18px 25px;
+        font-size: 1.1rem;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+    .form-control:focus, textarea:focus {
+        border-color: #008080;
+        box-shadow: 0 0 0 0.25rem rgba(0,128,128,0.2);
+    }
+    textarea {
+        min-height: 180px;
+        resize: vertical;
+    }
+    .star-rating {
+        font-size: 3rem !important;
+    }
+    .rating-container .filled-stars {
+        color: #008080;
+    }
+    .btn-feedback {
+        background: #008080;
+        color: white;
+        padding: 18px 60px;
+        border-radius: 50px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        transition: all 0.4s;
+    }
+    .btn-feedback:hover {
+        background: #006666;
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,128,128,0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="feedback-bg">
+    <div class="container">
+        <div class="feedback-card">
+
+            <!-- Header -->
+            <div class="feedback-header">
+                <h2>We Value Your Feedback</h2>
+                <p class="lead">Help us serve you better by rating our services and sharing your experience</p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Feedback Form -->
+            <form method="post" action="{% url 'feedback' %}">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">Your Full Name</label>
+                    <input type="text" name="pname" class="form-control form-control-lg" 
+                           placeholder="Enter your full name" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">Email Address</label>
+                    <input type="email" name="email" class="form-control form-control-lg" 
+                           placeholder="Enter your email" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">Rate Our Service</label>
+                    <div class="text-center">
+                        <input type="number" name="rating" class="rating rating-loading" 
+                               value="0" min="0" max="5" step="1" data-size="xl" required>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label fw-bold text-dark">Your Feedback / Message</label>
+                    <textarea name="message" class="form-control" 
+                              placeholder="Please share your experience..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-feedback">
+                    Submit Feedback
+                </button>
+            </form>
+
+            <div class="text-center mt-5">
+                <p class="text-muted">
+                    Your feedback helps us improve. Thank you for trusting HealthPlus Hospital!
+                </p>
+                <small class="text-muted">
+                    © 2025 HealthPlus Hospital • Excellence in Healthcare
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.1.2/js/star-rating.min.js"></script>
+<script>
+    // Initialize star rating
+    $(".rating").rating({
+        theme: 'krajee-fa',
+        filledStar: '<i class="fa fa-star"></i>',
+        emptyStar: '<i class="fa fa-star-o"></i>',
+        showClear: false,
+        showCaption: true,
+        size: 'xl'
+    });
+</script>
+{% endblock %}

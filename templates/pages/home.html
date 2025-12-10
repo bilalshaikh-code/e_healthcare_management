@@ -1,0 +1,191 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Home - HealthPlus Hospital{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+<link href="{% static 'lib/owlcarousel/assets/owl.theme.default.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-header bg-primary text-white py-6">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="p-5 col-lg-7 text-center text-lg-start">
+                <h5 class="text-uppercase text-light mb-3 fw-bold">Welcome To HealthPlus</h5>
+                <h1 class="display-4 fw-bold mb-4">Your Trusted Healthcare Solution</h1>
+                <p class="lead mb-4">Expert care, advanced facilities, and personalized services for your health and well-being.</p>
+                <div>
+                    <a href="{% url 'appointment' %}" class="btn btn-light rounded-pill py-2 px-4 me-3">Book Appointment</a>
+                    <a href="#doctors" class="btn btn-outline-light rounded-pill py-2 px-4">Find Doctor</a>
+                </div>
+            </div>
+            {% comment %} <div class="col-lg-5 text-center mt-4 mt-lg-0">
+                <img src="{% static 'img/hero-doctor.png' %}" class="img-fluid" alt="Doctor">
+            </div> {% endcomment %}
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center gx-5">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'img/about.jpg' %}" class="img-fluid rounded shadow" alt="About HealthPlus">
+            </div>
+            <div class="col-lg-6">
+                <h5 class="text-primary text-uppercase mb-3 fw-bold">About Us</h5>
+                <h2 class="mb-4 fw-bold">Compassionate Care for Your Health</h2>
+                <p class="text-muted mb-4">We provide world-class healthcare with experienced doctors, advanced technology, and a patient-first approach. Your health is our top priority.</p>
+                <div class="row g-3">
+                    <div class="col-6 col-sm-3 text-center">
+                        <div class="bg-light rounded-circle p-3">
+                            <i class="fa fa-user-md fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-0">Doctors</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 text-center">
+                        <div class="bg-light rounded-circle p-3">
+                            <i class="fa fa-procedures fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-0">Emergency</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 text-center">
+                        <div class="bg-light rounded-circle p-3">
+                            <i class="fa fa-microscope fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-0">Testing</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 text-center">
+                        <div class="bg-light rounded-circle p-3">
+                            <i class="fa fa-ambulance fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-0">Ambulance</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase mb-2 fw-bold">Services</h5>
+            <h2 class="fw-bold">What We Offer</h2>
+        </div>
+        <div class="row g-4">
+            {% for service in services|slice:":6" %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm service-card text-center p-4">
+                    <div class="mb-3">
+                        <i class="fa fa-3x {{ service.icon }} text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ service.title }}</h5>
+                    <p class="text-muted">{{ service.description|truncatewords:20 }}</p>
+                    <a href="{% url 'service_detail' service.id %}" class="btn btn-primary rounded-pill mt-3">Learn More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase mb-2 fw-bold">Packages</h5>
+            <h2 class="fw-bold">Health Programs</h2>
+        </div>
+        <div class="owl-carousel price-carousel">
+            {% for package in dests %}
+            <div class="card border-0 shadow-sm overflow-hidden text-center">
+                <img src="{{ package.img.url }}" class="card-img-top" alt="{{ package.name }}">
+                <div class="card-body p-4">
+                    <h4 class="text-primary">{{ package.name }}</h4>
+                    <h3 class="mb-3">${{ package.price }}<small class="text-muted fs-6">/ Year</small></h3>
+                    <p class="text-muted">{{ package.desc|truncatewords:15 }}</p>
+                    <a href="{% url 'appointment' %}" class="btn btn-primary rounded-pill mt-2 px-4 py-2">Apply Now</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Doctors Section -->
+<section class="py-5 bg-light" id="doctors">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase mb-2 fw-bold">Our Doctors</h5>
+            <h2 class="fw-bold">Meet Our Experts</h2>
+        </div>
+        <div class="owl-carousel team-carousel">
+            {% for doctor in AddDr %}
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <img src="{{ doctor.image.url }}" class="card-img-top" style="height:300px; object-fit:cover;" alt="{{ doctor.username }}">
+                <div class="card-body text-center p-3">
+                    <h5 class="fw-bold">{{ doctor.username }}</h5>
+                    <p class="text-primary mb-1">{{ doctor.speciality }}</p>
+                    <small class="text-muted d-block"><i class="fa fa-map-marker-alt"></i> {{ doctor.address }}</small>
+                    <small class="text-muted d-block"><i class="fa fa-graduation-cap"></i> {{ doctor.degree }}</small>
+                    <small class="text-muted d-block"><i class="fa fa-dollar-sign"></i> ${{ doctor.fees }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase mb-2 fw-bold">Testimonials</h5>
+            <h2 class="fw-bold">What Patients Say</h2>
+        </div>
+        <div class="owl-carousel testimonial-carousel">
+            {% for item in feedback %}
+            <div class="card border-0 shadow-sm p-4 text-center">
+                <img src="{% static 'img/testimonial-2.jpg' %}" class="rounded-circle mb-3 mx-auto d-block" width="100" alt="Patient">
+                <p class="fst-italic text-muted">“{{ item.message }}”</p>
+                <hr class="w-50 mx-auto">
+                <h5 class="fw-bold">{{ item.p_name }}</h5>
+                <small class="text-muted">{{ item.email }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted text-center">No testimonials yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $(".price-carousel, .team-carousel, .testimonial-carousel").owlCarousel({
+        loop:true,
+        margin:20,
+        nav:true,
+        dots:false,
+        autoplay:true,
+        autoplayTimeout:5000,
+        responsive:{
+            0:{ items:1 },
+            576:{ items:1 },
+            768:{ items:2 },
+            992:{ items:3 }
+        }
+    });
+});
+</script>
+{% endblock %}

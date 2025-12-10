@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+
+    This is Payment Process Page
+    <div class="mx-auto" style="margin-top:2%;">
+        <div class="mb-3">
+            RazorPay Order Details: 
+            <br>
+            {{razorpay_order}}
+        </div>
+
+        <div class="mb-3" style="margin-top:2%;">
+            Your Name: {{payment_obj.name}}
+            <br>
+            Your Amount: {{payment_obj.amount}}
+        <div>
+    </div>
+
+    <!-- Razorpay payment Form Starts -->
+
+    <form method="POST">
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+            var options = {
+                "key": "{{razorpay_key}}", // Enter the Key ID generated from the Dashboard
+                "amount": "{{payment_obj.amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                "currency": "INR",
+                "name": "{{payment_obj.name}}",
+                "description": "Test Transaction",
+                "image": "https://example.com/your_logo",
+                "order_id": "{{payment_obj.razor_pay_order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "callback_url": "{{callback_url}}",
+                "redirect": true,
+
+                // The redirect parameter will determine whether to POST response to the event handler post-payment completion or redirect to the callback URL.
+                // a. When a redirect is true user is redirected to the specified callback URL in case of payment failure.
+                // b. When a redirect is false user is shown the Checkout popup to retry the payment_obj.
+
+                "handler": function (response){            
+                    alert(response.razorpay_payment_id);
+                    alert(response.razorpay_order_id);
+                    alert(response.razorpay_signature)
+                },
+
+                "prefill": {
+                    "name": "Gaurav Kumar",
+                    "email": "gaurav.kumar@example.com",
+                    "contact": "9000090000"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        </script>
+            <!-- <input type="hidden" custom="Hidden Element" name="hidden">
+            rzp1.on('payment_obj.failed', function (response){
+                    alert(response.error.code);
+                    alert(response.error.description);
+                    alert(response.error.source);
+                    alert(response.error.step);
+                    alert(response.error.reason);
+                    alert(response.error.metadata.order_id);
+                    alert(response.error.metadata.payment_id);
+            });
+            document.getElementById('rzp-button1').onclick = function(e){
+                rzp1.open();
+                e.preventDefault();
+            } -->
+        </script>
+    </form>
+    <!-- Razorpay payment Form Ends -->
+    
+</body>
+</html>

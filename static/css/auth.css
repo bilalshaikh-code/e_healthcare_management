@@ -1,0 +1,111 @@
+/* auth.css - Modern Authentication Pages (Login/Register/Reset) */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Background for all auth pages */
+.auth-bg {
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), 
+                url('../img/loginbg-1.jpeg') center/cover no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+/* Card for forms */
+.auth-card {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(12px);
+    border-radius: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    padding: 40px;
+    max-width: 550px;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Logo inside card */
+.auth-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    border: 6px solid #008080;
+    padding: 8px;
+    background: white;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+/* Input focus effect */
+.form-control:focus {
+    border-color: #008080;
+    box-shadow: 0 0 0 0.2rem rgba(0,128,128,0.25);
+}
+
+/* Profile preview for register */
+.profile-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #008080;
+    margin: 10px auto;
+    display: block;
+}
+
+/* Buttons */
+.btn-auth {
+    background: #008080;
+    border: none;
+    font-weight: bold;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-auth:hover {
+    background: #006666;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,128,128,0.3);
+}
+
+/* Error messages */
+.error-message {
+    background: #f8d7da;
+    color: #842029;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+/* Links */
+a.text-primary {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a.text-primary:hover {
+    text-decoration: underline;
+}
+
+/* Checkbox */
+.form-check-input {
+    margin-top: 0.3rem;
+}
+
+/* Small text */
+.text-muted small {
+    font-size: 0.85rem;
+}

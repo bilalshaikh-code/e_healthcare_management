@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .disabled {
+            color: #c60e0e;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calendar</h1>
+    <div id="calendar-container">
+        <!-- Calendar will be dynamically generated here -->
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var calendarContainer = $('#calendar-container');
+
+            // Function to generate and update calendar
+            function generateCalendar(data) {
+                var calendarHTML = '<h3>' + data.month + ' ' + data.year + '</h3>';
+                calendarHTML += '<table border="1">';
+                calendarHTML += '<thead><tr>';
+                for (var i = 1; i <= 7; i++) {
+                    calendarHTML += '<th>' + i + '</th>';
+                }
+                calendarHTML += '</tr></thead>';
+                calendarHTML += '<tbody>';
+                var currentDay = 1;
+                for (var i = 0; i < 5; i++) { // assuming 5 weeks in a month
+                    calendarHTML += '<tr>';
+                    for (var j = 0; j < 7; j++) {
+                        if ((i === 0 && j < data.starting_day) || currentDay > data.days_in_month.length) {
+                            calendarHTML += '<td></td>';
+                        } else {
+                            var date = data.days_in_month[currentDay - 1];
+                            var disabledClass = (data.disabled_dates.indexOf(date) !== -1) ? ' disabled' : '';
+                            calendarHTML += '<td class="' + disabledClass + '">' + date + '</td>';
+                            currentDay++;
+                        }
+                    }
+                    calendarHTML += '</tr>';
+                }
+                calendarHTML += '</tbody></table>';
+                calendarContainer.html(calendarHTML);
+            }
+
+            // Function to make AJAX call to get calendar data
+            function getCalendarData(month, year) {
+                $.ajax({
+                    url: '/get_calendar_data/',
+                    method: 'GET',
+                    data: {
+                        'month': month,
+                        'year': year
+                    },
+                    success: function (data) {
+                        generateCalendar(data);
+                    }
+                });
+            }
+
+            // Initial calendar generation (you can set default month and year here)
+            var today = new Date();
+            var month = today.getMonth() + 1;
+            var year = today.getFullYear();
+            getCalendarData(month, year);
+        });
+
+        $(document).on('click', '.disabled', function() {
+            alert('This date is not available for appointment.');
+        });
+    </script>
+</body>
+</html>

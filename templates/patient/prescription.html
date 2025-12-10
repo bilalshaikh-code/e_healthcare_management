@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor's Description</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-900 min-h-screen text-white py-10">
+
+    <!-- Flash Messages -->
+    {% for message in messages %}
+    <div class="max-w-3xl mx-auto mb-4 px-4">
+        <div class="bg-yellow-300 text-red-700 font-semibold py-3 px-4 rounded-lg shadow-md">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="container max-w-3xl mx-auto bg-white text-gray-900 rounded-2xl shadow-2xl p-8">
+
+        <!-- Search Form -->
+        <form method="POST" action="{% url 'prescription' %}" class="mb-8">
+            {% csrf_token %}
+
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <input 
+                    type="text" 
+                    name="query" 
+                    placeholder="Search by Appointment ID..."
+                    class="w-full md:flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none"
+                >
+
+                <button 
+                    type="submit"
+                    class="px-6 py-3 bg-primary hover:bg-sky-600 text-white rounded-lg font-medium shadow-md transition">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        <!-- Search Results -->
+        {% if searched %}
+            {% for dest in searched %}
+                <div class="bg-slate-100 rounded-xl p-6 mb-6 shadow">
+                    <h2 class="text-2xl font-bold text-primary mb-2">
+                        Dr. {{ dest.appointment_id.doctorid }}
+                    </h2>
+
+                    <p class="text-gray-700"><span class="font-semibold">Specialty:</span> {{ dest.appointment_id.doctorid.speciality }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Contact:</span> {{ dest.appointment_id.doctorid.email }}</p>
+
+                    <p class="text-gray-700"><span class="font-semibold">Appointment ID:</span> {{ dest.appointment_id.id }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ dest.date }}</p>
+
+                    <p class="text-gray-700 mt-3"><span class="font-semibold">Diagnosis:</span> {{ dest.prescription }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Prescription:</span> {{ dest.chat }}</p>
+                </div>
+            {% endfor %}
+
+        {% else %}
+
+            {% for dest in puser %}
+            {% if dest.appointment_id.patientid.email == user.email %}
+
+            <div class="bg-slate-100 rounded-xl p-6 mb-6 shadow">
+                <h2 class="text-2xl font-bold text-primary mb-2">
+                    Dr. {{ dest.appointment_id.doctorid }}
+                </h2>
+
+                <p class="text-gray-700"><span class="font-semibold">Specialty:</span> {{ dest.appointment_id.doctorid.speciality }}</p>
+                <p class="text-gray-700"><span class="font-semibold">Contact:</span> {{ dest.appointment_id.doctorid.email }}</p>
+
+                <p class="text-gray-700"><span class="font-semibold">Appointment ID:</span> {{ dest.appointment_id.id }}</p>
+                <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ dest.date }}</p>
+
+                <p class="text-gray-700 mt-3"><span class="font-semibold">Diagnosis:</span> {{ dest.prescription }}</p>
+                <p class="text-gray-700"><span class="font-semibold">Prescription:</span> {{ dest.chat }}</p>
+            </div>
+
+            {% endif %}
+            {% endfor %}
+
+        {% endif %}
+
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mt-10">
+        <a href="{% url 'home' %}" 
+            class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 underline text-lg">
+            Back to Home
+        </a>
+    </div>
+
+</body>
+</html>

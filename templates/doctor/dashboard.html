@@ -1,0 +1,197 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+
+{% block title %}Doctor Dashboard - HealthPlus Hospital{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/doctor.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Success Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="success">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<!-- Doctor Verification Alert -->
+{% for doctor in AddDr %}
+    {% if doctor.user_id == user.id and not doctor.is_verified %}
+        <div class="warning-alert">Wait for admin approval.</div>
+    {% endif %}
+{% endfor %}
+
+<!-- Topbar -->
+<div class="topbar">
+    <h2>Welcome Dr. {{ user.first_name }}</h2>
+
+    <div class="notification" id="notificationBell">
+        <i class="fa fa-bell fa-lg"></i>
+
+        {% if notifications %}
+            <span class="badge">{{ notifications|length }}</span>
+        {% endif %}
+
+        <div class="dropdown-notifications" id="notificationDropdown">
+            <h5>Notifications</h5>
+            <ul>
+                {% for note in notifications %}
+                    <li>
+                        {{ note.message }}<br>
+                        <small class="text-muted">{{ note.timestamp|date:"M d, H:i" }}</small>
+                    </li>
+                {% empty %}
+                    <li>No new notifications</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Summary Cards -->
+<div class="row">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card text-center">
+            <h5>Total Patients</h5>
+            <h2>{{ total_patients }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card text-center">
+            <h5>Today's Appointments</h5>
+            <h2>{{ todays_appointments }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card text-center">
+            <h5>Upcoming Appointments</h5>
+            <h2>{{ upcoming_appointments }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card text-center">
+            <h5>Pending Reports</h5>
+            <h2>{{ pending_reports }}</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+            <h5>Weekly Appointments</h5>
+            <canvas id="appointmentsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+            <h5>Patient Age Distribution</h5>
+            <canvas id="patientsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Appointments Table -->
+<div class="card">
+    <h5 class="mb-3">Upcoming Appointments</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ appt.patient.full_name }}</td>
+                    <td>{{ appt.date|date:"M d, Y" }}</td>
+                    <td>{{ appt.time|time:"H:i" }}</td>
+
+                    <td>
+                        {% if appt.status == 'Pending' %}
+                            <span class="badge bg-warning text-dark">{{ appt.status }}</span>
+                        {% elif appt.status == 'Completed' %}
+                            <span class="badge bg-success">{{ appt.status }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">{{ appt.status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'doctor_appointment_detail' appt.id %}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No upcoming appointments</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+// Notification dropdown
+document.addEventListener('click', function(e){
+    if (notificationBell.contains(e.target)) {
+        notificationDropdown.classList.toggle('active');
+    } else {
+        notificationDropdown.classList.remove('active');
+    }
+});
+
+// Charts
+const appointmentsChart = new Chart(
+    document.getElementById('appointmentsChart'),
+    {
+        type: 'line',
+        data: {
+            labels: {{ weekly_labels|safe }},
+            datasets: [{
+                data: {{ weekly_data|safe }},
+                borderColor: '#008080',
+                backgroundColor: 'rgba(0,128,128,0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: { responsive: true }
+    }
+);
+
+const patientsChart = new Chart(
+    document.getElementById('patientsChart'),
+    {
+        type: 'doughnut',
+        data: {
+            labels: {{ age_groups_labels|safe }},
+            datasets: [{
+                data: {{ age_groups_data|safe }},
+                backgroundColor: ['#008080', '#00b3b3', '#66cccc', '#99dddd']
+            }]
+        },
+        options: { responsive: true }
+    }
+);
+</script>
+{% endblock %}

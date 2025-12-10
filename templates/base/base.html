@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}HealthPlus - Hospital Management{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="hospital, clinic, healthcare, appointment, django">
+    <meta name="description" content="Modern Hospital & Healthcare Management System">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries CSS -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+
+    <!-- Bootstrap & Custom CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid py-1 border-bottom d-none d-lg-flex justify-content-between align-items-center bg-light">
+        <div class="d-flex align-items-center small text-muted">
+            <i class="bi bi-telephone me-2"></i> +012 345 6789
+            <span class="mx-2">|</span>
+            <i class="bi bi-envelope me-2"></i> info@example.com
+        </div>
+        <div class="d-flex align-items-center">
+            <a href="{% url 'feedback' %}" class="text-dark me-3"><i class="bi bi-chat-left-text"></i></a>
+            <a href="{% url 'complain' %}" class="text-dark"><i class="bi bi-exclamation-circle"></i></a>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-2">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
+                <img src="{% static 'img/logo1.png' %}" height="60" alt="HealthPlus Logo">
+                {% comment %} <span class="ms-2 fw-bold text-primary">HealthPlus</span> {% endcomment %}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'service' %}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'price' %}">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'appointment' %}">Book Appointment</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                Hello, {{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'p_view' %}">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'signin' %}">Login</a></li>
+                                <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer Start -->
+    <footer class="bg-dark text-light pt-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Contact -->
+                <div class="col-md-4">
+                    <h5 class="text-primary mb-3">Contact Us</h5>
+                    <p><i class="bi bi-geo-alt me-2"></i>123 Street, New York</p>
+                    <p><i class="bi bi-telephone me-2"></i>+012 345 67890</p>
+                    <p><i class="bi bi-envelope me-2"></i>info@healthplus.com</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-4">
+                    <h5 class="text-primary mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'index' %}" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="{% url 'about' %}" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a href="{% url 'service' %}" class="text-light text-decoration-none">Services</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div class="col-md-4">
+                    <h5 class="text-primary mb-3">Follow Us</h5>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-primary btn-square"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn btn-primary btn-square"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-primary btn-square"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="btn btn-primary btn-square"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-secondary my-4">
+            <p class="text-center mb-0">&copy; 2025 <span class="text-primary">HealthPlus</span>. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary btn-lg back-to-top rounded-circle">
+        <i class="bi bi-arrow-up"></i>
+    </a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Main JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
