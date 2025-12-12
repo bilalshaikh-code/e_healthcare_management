@@ -1,0 +1,311 @@
+<!-- templates/patient/book_appointment.html -->
+{% extends "patient/base.html" %}
+{% load static %}
+
+{% block title %}Book Appointment - HealthPlus{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css' rel='stylesheet'>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
+<style>
+    .fc-event { cursor: pointer; }
+    .doctor-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    .doctor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+    }
+    .doctor-card.active {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        border-left: 4px solid #1976d2;
+        font-weight: 500;
+    }
+    .slot-available {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        font-weight: 500;
+    }
+    .slot-available:hover {
+        background: linear-gradient(45deg, #218838, #1baa80);
+        transform: scale(1.05);
+    }
+    .slot-booked {
+        background: #dc3545;
+        color: white;
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    #selectedDoctorName {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">
+        Book Appointment
+    </h2>
+
+    <div class="row g-4">
+        <!-- Doctor List -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h5 class="mb-0">Select a Doctor</h5>
+                </div>
+                <div class="card-body p-0">
+                    <input type="text" id="searchDoctor" class="form-control border-0 shadow-none rounded-0" 
+                           placeholder="Search by name or speciality..." autocomplete="off">
+                    
+                    <div class="list-group list-group-flush" style="max-height: 65vh; overflow-y: auto;">
+                        {% for doctor in doctors %}
+                        <a href="#" class="list-group-item list-group-item-action doctor-card p-4" 
+                           data-doctor-id="{{ doctor.id }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Dr. {{ doctor.user.get_full_name }}</h6>
+                                    <p class="mb-1 text-primary small">{{ doctor.speciality.name }}</p>
+                                    <div class="d-flex align-items-center gap-1 text-warning small">
+                                        {% with ''|center:doctor.rating|floatformat:0 as range %}
+                                            {% for _ in range %}
+                                                <i class="fas fa-star"></i>
+                                            {% endfor %}
+                                        {% endwith %}
+                                        ({{ doctor.rating }})
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success fs-6">₹{{ doctor.fees }}</span>
+                                </div>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="p-4 text-center text-muted">
+                            <i class="fas fa-user-md fa-3x mb-3 opacity-25"></i>
+                            <p>No verified doctors found</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar & Slots -->
+        <div class="col-lg-8">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" id="selectedDoctorName">
+                        Select a doctor to view available slots
+                    </h5>
+                    <div>
+                        <span class="badge bg-success me-2">Available</span>
+                        <span class="badge bg-danger">Booked</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- FullCalendar -->
+                    <div id="calendar"></div>
+
+                    <!-- Slot Selection -->
+                    <div id="slotSelection" class="mt-5" style="display: none;">
+                        <div class="d-flex align-items-center mb-3">
+                            <h5 class="mb-0 me-3">Available Slots on</h5>
+                            <h5 class="text-primary mb-0" id="selectedDate"></h5>
+                        </div>
+                        <div id="slotsContainer" class="row g-3"></div>
+                    </div>
+
+                    <!-- No Doctor Selected -->
+                    <div id="noDoctorMessage" class="text-center py-5 text-muted">
+                        <i class="fas fa-stethoscope fa-4x mb-4 opacity-50"></i>
+                        <h5>Please select a doctor from the list</h5>
+                        <p>Click on any doctor card to see their calendar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Booking Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-gradient text-white" style="background: linear-gradient(45deg, #28a745, #20c997);">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    Confirm Your Appointment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'confirm_booking' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="doctor_id" id="confirmDoctorId">
+                    <input type="hidden" name="date" id="confirmDate">
+                    <input type="hidden" name="slot_id" id="confirmSlotId">
+
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                        <h5>Appointment Summary</h5>
+                    </div>
+
+                    <div class="border rounded p-3 bg-light mb-3">
+                        <p class="mb-2"><strong>Doctor:</strong> <span id="confirmDoctorName" class="text-primary"></span></p>
+                        <p class="mb-2"><strong>Date:</strong> <span id="confirmDateDisplay" class="text-info"></span></p>
+                        <p class="mb-2"><strong>Time:</strong> <span id="confirmTime" class="text-success fw-bold"></span></p>
+                        <p class="mb-0"><strong>Consultation Fee:</strong> ₹<span id="confirmFees" class="fs-5 text-danger fw-bold"></span></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="symptoms" class="form-label">Symptoms / Reason for visit <span class="text-danger">*</span></label>
+                        <textarea name="symptoms" id="symptoms" class="form-control" rows="4" 
+                                  placeholder="e.g., Fever since 2 days, cough, headache..." required></textarea>
+                        <small class="text-muted">This helps the doctor prepare better</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success btn-lg px-5">
+                        Confirm & Pay ₹<span id="modalFees"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        height: '600px',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek'
+        },
+        validRange: {
+            start: new Date().toISOString().split('T')[0]  // Disable past dates
+        },
+        dateClick: function(info) {
+            if (!selectedDoctorId) {
+                alert('Please select a doctor first!');
+                return;
+            }
+            selectedDate = info.dateStr;
+            document.getElementById('selectedDate').textContent = new Date(info.dateStr).toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            loadSlots(selectedDoctorId, info.dateStr);
+        }
+    });
+    calendar.render();
+
+    let selectedDoctorId = null;
+    let selectedDate = null;
+
+    // Doctor Selection
+    document.querySelectorAll('.doctor-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update active state
+            document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            
+            selectedDoctorId = this.dataset.doctorId;
+            const doctorName = this.querySelector('h6').textContent;
+            document.getElementById('selectedDoctorName').textContent = doctorName;
+            
+            // Reset calendar
+            calendar.removeAllEventSources();
+            document.getElementById('slotSelection').style.display = 'none';
+            document.getElementById('noDoctorMessage').style.display = 'none';
+        });
+    });
+
+    // Search Doctors
+    document.getElementById('searchDoctor').addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        document.querySelectorAll('.doctor-card').forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(term) ? '' : 'none';
+        });
+    });
+});
+
+function loadSlots(doctorId, date) {
+    fetch(`/patient/api/slots/?doctor=${doctorId}&date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('slotsContainer');
+            container.innerHTML = '';
+            document.getElementById('slotSelection').style.display = 'block';
+
+            if (data.slots.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No slots available on this date</p>
+                    </div>`;
+                return;
+            }
+
+            data.slots.forEach(slot => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-4';
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `btn w-100 py-3 fs-5 ${slot.available ? 'slot-available' : 'slot-booked'}`;
+                button.innerHTML = `
+                    <div>${slot.time}</div>
+                    <small>${slot.available ? 'Click to book' : 'Booked'}</small>
+                `;
+                button.disabled = !slot.available;
+
+                if (slot.available) {
+                    button.onclick = () => openConfirmModal(
+                        doctorId, 
+                        date, 
+                        slot.id, 
+                        slot.time, 
+                        data.fees, 
+                        data.doctor_name
+                    );
+                }
+
+                col.appendChild(button);
+                container.appendChild(col);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error loading slots. Please try again.');
+        });
+}
+
+function openConfirmModal(doctorId, date, slotId, time, fees, doctorName) {
+    document.getElementById('confirmDoctorId').value = doctorId;
+    document.getElementById('confirmDate').value = date;
+    document.getElementById('confirmSlotId').value = slotId;
+    
+    document.getElementById('confirmDoctorName').textContent = doctorName;
+    document.getElementById('confirmDateDisplay').textContent = new Date(date).toLocaleDateString('en-IN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('confirmTime').textContent = time;
+    document.getElementById('confirmFees').textContent = fees;
+    document.getElementById('modalFees').textContent = fees;
+
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+<!-- templates/doctor/docpres.html -->
+{% extends "doctor/base.html" %}
+{% block title %}Past Prescriptions{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Past Prescriptions</h2>
+        <div>
+            <a href="{% url 'showAppointment' %}" class="btn btn-success">
+                Write New Prescription
+            </a>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control" placeholder="Search patient name or ID..." 
+                           value="{{ request.GET.q|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if puser %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Date Issued</th>
+                    <th>Patient</th>
+                    <th>Appointment Date</th>
+                    <th>Medicines</th>
+                    <th>Follow-up</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rx in puser %}
+                <tr>
+                    <td><strong>#{{ rx.id }}</strong></td>
+                    <td>
+                        <strong>{{ rx.date_issued|date:"d M Y" }}</strong><br>
+                        <small class="text-muted">{{ rx.date_issued|time:"h:i A" }}</small>
+                    </td>
+                    <td>
+                        <div>
+                            <strong>{{ rx.appointment.patientid.get_full_name }}</strong><br>
+                            <small class="text-muted">
+                                Age {{ rx.appointment.patientid.age|default:"—" }} • 
+                                {{ rx.appointment.patientid.get_gender_display }}
+                            </small>
+                        </div>
+                    </td>
+                    <td>
+                        {{ rx.appointment.date|date:"d M Y" }}<br>
+                        <small class="text-muted">{{ rx.appointment.slotid.slot_time }}</small>
+                    </td>
+                    <td>
+                        <span class="text-success">
+                            {{ rx.medicines|truncatechars:60 }}
+                        </span>
+                        {% if rx.medicines|length > 60 %}
+                            <br><small class="text-muted">Click View for full list</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rx.follow_up_date %}
+                            <span class="badge bg-warning text-dark">
+                                {{ rx.follow_up_date|date:"d M Y" }}
+                            </span>
+                        {% else %}
+                            <em class="text-muted">—</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'doctor_appointment_detail' rx.appointment.id %}" 
+                               class="btn btn-sm btn-primary" title="View Full Details">
+                                View
+                            </a>
+                            <a href="{% url 'download_prescription_pdf' rx.id %}" 
+                               class="btn btn-sm btn-success" title="Download PDF">
+                                PDF
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5 my-5">
+        <i class="fas fa-file-medical fa-5x text-muted mb-4 opacity-50"></i>
+        <h4 class="text-muted">No prescriptions found</h4>
+        <p class="text-muted">You haven't issued any prescriptions yet.</p>
+        <a href="{% url 'showAppointment' %}" class="btn btn-success btn-lg">
+            Write First Prescription
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

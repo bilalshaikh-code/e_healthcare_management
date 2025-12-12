@@ -1,0 +1,145 @@
+<!-- templates/doctor/appointment_detail.html -->
+{% extends "doctor/base.html" %}
+{% block title %}Appointment #{{ appt.id }} - Dr. {{ user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        Appointment #{{ appt.id }} 
+                        <span class="badge bg-light text-dark ms-2">{{ appt.get_status_display }}</span>
+                    </h4>
+                    <a href="{% url 'dongoing' %}" class="btn btn-light btn-sm">
+                        Back to List
+                    </a>
+                </div>
+
+                <div class="card-body">
+                    <!-- Patient Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Patient Information</h5>
+                            <p>
+                                <strong>Name:</strong> {{ patient.get_full_name }}<br>
+                                <strong>Age:</strong> {{ patient.age|default:"—" }} years<br>
+                                <strong>Gender:</strong> {{ patient.get_gender_display }}<br>
+                                <strong>Mobile:</strong> {{ patient.mobile_number }}<br>
+                                <strong>Email:</strong> {{ patient.email }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Appointment Details</h5>
+                            <p>
+                                <strong>Date:</strong> {{ appt.date|date:"d M Y (l)" }}<br>
+                                <strong>Time:</strong> {{ appt.slotid.slot_time }}<br>
+                                <strong>Fees Paid:</strong> ₹{{ appt.doctorid.fees }}<br>
+                                <strong>Booked On:</strong> {{ appt.created_at|date:"d M Y, H:i" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if appt.symptoms %}
+                    <div class="alert alert-info">
+                        <strong>Symptoms Reported:</strong><br>
+                        {{ appt.symptoms }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Prescription Section -->
+                    <div class="mt-4">
+                        <h5>Prescription</h5>
+                        {% if prescription %}
+                            <div class="border rounded p-4 bg-light">
+                                <p><strong>Medicines:</strong><br>{{ prescription.medicines|linebreaks }}</p>
+                                {% if prescription.dosage %}
+                                    <p><strong>Dosage:</strong> {{ prescription.dosage }}</p>
+                                {% endif %}
+                                {% if prescription.instructions %}
+                                    <p><strong>Instructions:</strong> {{ prescription.instructions }}</p>
+                                {% endif %}
+                                {% if prescription.follow_up_date %}
+                                    <p class="text-danger"><strong>Follow-up:</strong> {{ prescription.follow_up_date|date:"d M Y" }}</p>
+                                {% endif %}
+                                <p><small class="text-muted">Issued on {{ prescription.date_issued|date:"d M Y" }}</small></p>
+                            </div>
+                            <a href="{% url 'download_prescription_pdf' prescription.id %}" class="btn btn-success mt-3">
+                                Download PDF
+                            </a>
+                        {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-file-medical fa-4x mb-3"></i>
+                                <p>No prescription issued yet</p>
+                                <a href="{% url 'showAppointment' %}?appt={{ appt.id }}" class="btn btn-primary">
+                                    Write Prescription Now
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% if not prescription %}
+                        <a href="{% url 'showAppointment' %}?appt={{ appt.id }}" class="list-group-item">
+                            Write Prescription
+                        </a>
+                    {% endif %}
+                    {% if appt.status == 'confirmed' %}
+                        <a href="#" class="list-group-item text-success" onclick="markComplete({{ appt.id }})">
+                            Mark as Completed
+                        </a>
+                    {% endif %}
+                    <a href="tel:{{ patient.mobile_number }}" class="list-group-item">
+                        Call Patient
+                    </a>
+                    <a href="mailto:{{ patient.email }}" class="list-group-item">
+                        Email Patient
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function markComplete(apptId) {
+    if (!confirm('Mark this appointment as completed?')) return;
+
+    fetch("{% url 'mark_complete' appt.id %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update status badge
+            document.querySelector('.badge').outerHTML = data.badge;
+            // Disable button
+            event.target.style.display = 'none';
+            // Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show mt-3';
+            alert.innerHTML = `${data.message} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.querySelector('.card-body').insertBefore(alert, document.querySelector('.card-body').firstChild);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(() => alert('Network error. Please try again.'));
+}
+</script>
+{% endblock %}

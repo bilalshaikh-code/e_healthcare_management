@@ -1,0 +1,84 @@
+<!-- templates/doctor/appointments_past.html -->
+{% extends "doctor/base.html" %}
+{% block title %}Past Appointments{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Past Appointments</h2>
+        <div class="btn-group">
+            <a href="{% url 'dongoing' %}" class="btn btn-outline-primary">Today & Ongoing</a>
+            <a href="{% url 'dupcoming' %}" class="btn btn-outline-primary">Upcoming</a>
+            <a href="{% url 'doutgoing' %}" class="btn btn-primary">Past</a>
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Patient</th>
+                    <th>Age / Gender</th>
+                    <th>Symptoms</th>
+                    <th>Status</th>
+                    <th>Prescription</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>
+                        <strong>{{ appt.date|date:"d M Y" }}</strong><br>
+                        <small class="text-muted">{{ appt.slotid.slot_time }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ appt.patientid.get_full_name }}</strong>
+                    </td>
+                    <td>
+                        {{ appt.patientid.age|default:"—" }} yrs<br>
+                        <small class="text-muted">{{ appt.patientid.get_gender_display }}</small>
+                    </td>
+                    <td>
+                        {% if appt.symptoms %}
+                            <span class="text-muted small">{{ appt.symptoms|truncatewords:12 }}</span>
+                        {% else %}
+                            <em class="text-muted">—</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-{% if appt.status == 'completed' %}success
+                                                 {% elif appt.status == 'cancelled' %}danger
+                                                 {% else %}secondary{% endif %}">
+                            {{ appt.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appt.prescription %}
+                            <span class="badge bg-success">Issued</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Not Issued</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'doctor_appointment_detail' appt.id %}" 
+                           class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-5">
+        <i class="fas fa-history fa-5x text-muted mb-4 opacity-50"></i>
+        <h4 class="text-muted">No past appointments</h4>
+        <p class="text-muted">You have no completed or cancelled appointments yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

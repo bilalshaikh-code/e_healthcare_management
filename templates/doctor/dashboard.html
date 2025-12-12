@@ -117,12 +117,12 @@
                 {% for appt in appointments %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ appt.patient.full_name }}</td>
+                    <td>{{ appt.patientid.first_name }} {{ appt.patientid.last_name }}</td>
                     <td>{{ appt.date|date:"M d, Y" }}</td>
-                    <td>{{ appt.time|time:"H:i" }}</td>
+                    <td>{{ appt.slotid.slot_time }}</td>
 
                     <td>
-                        {% if appt.status == 'Pending' %}
+                        {% if appt.status == 'Pending' or appt.status == 'confirmed' %}
                             <span class="badge bg-warning text-dark">{{ appt.status }}</span>
                         {% elif appt.status == 'Completed' %}
                             <span class="badge bg-success">{{ appt.status }}</span>
