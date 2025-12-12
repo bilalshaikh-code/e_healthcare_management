@@ -1,0 +1,13 @@
+Purpose,URL,Name
+Register,/register/,register
+Login,/login/,login
+Logout,/logout/,logout
+Patient Dashboard,/patient/dashboard/,patient_dashboard
+Edit Profile,/patient/profile/,patient_profile
+Book Appointment,/patient/book/,book_appointment
+Get Slots (API),/patient/api/slots/,get_available_slots
+Confirm Booking,/patient/confirm-booking/,confirm_booking
+My Appointments,/patient/appointments/,my_appointments
+Cancel Appointment,/patient/appointment/5/cancel/,cancel_appointment
+View Prescription,/patient/prescription/3/,prescription_detail
+Download PDF,/patient/prescription/3/pdf/,download_prescription_pdf

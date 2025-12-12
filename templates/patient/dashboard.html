@@ -1,0 +1,141 @@
+{% extends "patient/base.html" %}
+{% load static %}
+
+{% block title %}My Dashboard - HealthPlus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">
+        <i class="fas fa-heartbeat text-primary"></i> Welcome back, {{ user.first_name }}!
+    </h2>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Appointments</h5>
+                    <h2 class="text-primary">{{ total_appointments }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Upcoming</h5>
+                    <h2 class="text-success">{{ upcoming_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Completed</h5>
+                    <h2 class="text-info">{{ completed_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Prescriptions</h5>
+                    <h2 class="text-warning">{{ prescription_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upcoming Appointments -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Upcoming Appointments</h5>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus"></i> Book New
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if upcoming_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Doctor</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appt in upcoming_appointments %}
+                                <tr>
+                                    <td><strong>{{ appt.date|date:"d M Y" }}</strong></td>
+                                    <td>Dr. {{ appt.doctorid.user.get_full_name }}</td>
+                                    <td>{{ appt.slotid.slot_time }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ appt.get_status_display }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'appointment_detail' appt.id %}" class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center py-5 text-muted">
+                        No upcoming appointments.<br>
+                        <a href="{% url 'book_appointment' %}">Book your first appointment now!</a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'book_appointment' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-plus text-success"></i> Book Appointment
+                    </a>
+                    <a href="{% url 'my_prescriptions' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-prescription text-warning"></i> My Prescriptions
+                    </a>
+                    <a href="{% url 'appointment_history' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-history text-info"></i> Appointment History
+                    </a>
+                    <a href="{% url 'patient_profile' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-edit text-primary"></i> Update Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Prescription -->
+            {% if latest_prescription %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">Latest Prescription</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Dr. {{ latest_prescription.prescribed_by }}</strong></p>
+                    <small class="text-muted">{{ latest_prescription.date_issued|date:"d M Y" }}</small>
+                    <hr>
+                    <a href="{% url 'prescription_detail' latest_prescription.id %}" class="btn btn-sm btn-outline-warning w-100">
+                        View Prescription
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+<!-- templates/patient/appointment_history.html -->
+{% extends "patient/base.html" %}
+{% block title %}Appointment History - HealthPlus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Appointment History</h2>
+        <a href="{% url 'my_appointments' %}" class="btn btn-outline-primary">
+            Back to Appointments
+        </a>
+    </div>
+
+    {% if history %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle shadow-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>Date</th>
+                    <th>Doctor</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Prescription</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in history %}
+                <tr class="{% if appt.status == 'completed' %}table-success
+                           {% elif appt.status == 'cancelled' %}table-danger
+                           {% else %}table-warning{% endif %}">
+                    <td>
+                        <strong>{{ appt.date|date:"d M Y" }}</strong><br>
+                        <small class="text-muted">{{ appt.date|date:"l" }}</small>
+                    </td>
+                    <td>
+                        <div>
+                            <strong>Dr. {{ appt.doctorid.user.get_full_name }}</strong><br>
+                            <small class="text-muted">{{ appt.doctorid.speciality.name }}</small>
+                        </div>
+                    </td>
+                    <td>{{ appt.slotid.slot_time }}</td>
+                    <td>
+                        <span class="badge bg-{% if appt.status == 'completed' %}success
+                                                 {% elif appt.status == 'cancelled' %}danger
+                                                 {% else %}secondary{% endif %}">
+                            {{ appt.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appt.prescription %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Not Issued</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'prescription_detail' appt.prescription.id %}" 
+                           class="btn btn-sm btn-primary" 
+                           {% if not appt.prescription %}style="display:none"{% endif %}>
+                            View Rx
+                        </a>
+                        <a href="{% url 'download_prescription_pdf' appt.prescription.id %}" 
+                           class="btn btn-sm btn-success" 
+                           {% if not appt.prescription %}style="display:none"{% endif %}>
+                            PDF
+                        </a>
+                        {% if not appt.prescription %}
+                            <span class="text-muted small">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-5">
+        <i class="fas fa-history fa-5x text-muted mb-4 opacity-50"></i>
+        <h4 class="text-muted">No appointment history</h4>
+        <p class="text-muted">
+            Your past appointments will appear here after your visits.
+        </p>
+        <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
+            Book Your First Appointment
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

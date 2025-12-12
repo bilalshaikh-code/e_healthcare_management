@@ -1,233 +1,230 @@
-from datetime import date
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from datetime import date
 from .manage import UserManager
+from django.core.validators import MinValueValidator
 
-# ============================
-# User Models
-# ============================
-
+# ===================================================================
+# 1. Custom User (Patient + Doctor + Admin)
+# ===================================================================
 class CustomUser(AbstractUser):
-    """
-    Custom user model using email as login.
-    Roles:
-        - Admin
-        - Patient
-        - Doctor
-    """
     ROLE_CHOICES = (
-        ("admin", "Admin"),
-        ("patient", "Patient"),
-        ("doctor", "Doctor"),
+        ('patient', 'Patient'),
+        ('doctor', 'Doctor'),
+        ('admin', 'Admin'),
     )
 
     username = None
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, db_index=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='patient')
 
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="patient")
-
-    mobile_number = models.CharField(max_length=14, null=True, blank=True)
-    address = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='pics/users', null=True, blank=True)
-
-    reset_token = models.CharField(max_length=100, null=True, blank=True)
-    
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, blank=True)
+    mobile_number = models.CharField(max_length=15, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=[('male','Male'),('female','Female'),('other','Other')], blank=True)
+    dob = models.DateField("Date of Birth", null=True, blank=True)
+    address = models.TextField(blank=True)
+    image = models.ImageField(upload_to='users/', blank=True, null=True)
+    is_email_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
     def __str__(self):
-        return f"{self.email} ({self.role})"
+        return f"{self.get_full_name()} ({self.role})"
 
-# ============================
-# Doctor Models
-# ============================
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}".strip() or self.email
 
+    @property
+    def age(self):
+        if self.dob:
+            today = date.today()
+            return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+        return None
+
+
+# ===================================================================
+# 2. Speciality & Doctor Profile
+# ===================================================================
 class Speciality(models.Model):
-    """
-    Represents a medical specialty for doctors (e.g., Cardiology, Dermatology, Neurology, etc.).
-    Each specialty has a name and an optional description to provide more details.
-    """
-    name = models.CharField(
-        max_length=50,  # Increased length for longer specialty names
-        unique=True,
-        help_text="Name of the medical specialty (e.g., Cardiology)"
-    )
-    description = models.TextField(
-        blank=True,
-        null=True,
-        help_text="Optional description of the specialty."
-    )
-
-    class Meta:
-        verbose_name = "Specialty"
-        verbose_name_plural = "Specialties"
-        ordering = ['name']  # Orders specialties alphabetically
-
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return self.name
 
+
 class Doctor(models.Model):
-    """
-    Doctor profile — contains only doctor-specific data.
-    """
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-
-    dob = models.DateField(null=True, blank=True)
-    gender = models.CharField(max_length=15, null=True, blank=True)
-
-    degree = models.CharField(max_length=50)
-    speciality = models.ForeignKey(Speciality, on_delete=models.SET_NULL, null=True)
-    fees = models.IntegerField()
-
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='doctor_profile')
+    speciality = models.ForeignKey(Speciality, on_delete=models.SET_NULL, null=True, related_name='doctors')
+    degree = models.CharField(max_length=100)
+    experience_years = models.PositiveIntegerField(default=0)
+    fees = models.PositiveIntegerField(validators=[MinValueValidator(100)])
+    consultation_time = models.PositiveSmallIntegerField(default=30, help_text="Minutes per patient")
     is_verified = models.BooleanField(default=False)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
+    total_reviews = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return f"Dr. {self.user.get_full_name()}"
 
-# ============================
-# Appointment & Schedule Models
-# ============================
+    class Meta:
+        ordering = ['user__first_name']
 
+
+# ===================================================================
+# 3. Time Slots
+# ===================================================================
 class Slot(models.Model):
-    """
-    Represents a time slot for appointments.
-    """
-    time = models.CharField(max_length=50)
+    slot_time = models.CharField(max_length=50, unique=True)  # "10:00 AM - 10:30 AM"
+    start_time = models.TimeField()  # 10:00:00
+    end_time = models.TimeField()    # 10:30:00
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
-        return f"{self.time}"
+        return self.slot_time
 
-class Appointment(models.Model):
-    """
-    Appointment between patient and doctor at a specific slot.
-    """
-    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
-    date = models.DateField()
-    status = models.CharField(max_length=50)  # e.g., booked, completed, canceled
+    class Meta:
+        ordering = ['start_time']
 
-    def __str__(self):
-        return f"Appointment: {self.patient} with {self.doctor} on {self.date}"
 
+# ===================================================================
+# 4. Doctor Weekly Schedule (Set once)
+# ===================================================================
 class DoctorWeeklySchedule(models.Model):
-    """
-    Doctor sets his weekly template once → system auto-creates daily slots
-    Example: Dr. Tirth works every Mon, Wed, Fri from 10 AM - 1 PM & 4 PM - 7 PM
-    """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='weekly_schedule')
     day_of_week = models.CharField(max_length=10, choices=[
-        ('monday', 'Monday'), ('tuesday', 'Tuesday'), ('wednesday', 'Wednesday'),
-        ('thursday', 'Thursday'), ('friday', 'Friday'), ('saturday', 'Saturday'), ('sunday', 'Sunday')
+        ('monday','Monday'), ('tuesday','Tuesday'), ('wednesday','Wednesday'),
+        ('thursday','Thursday'), ('friday','Friday'), ('saturday','Saturday'), ('sunday','Sunday')
     ])
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('doctor', 'day_of_week', 'slot')
-        ordering = ['day_of_week', 'slot']
+
+
+# ===================================================================
+# 5. Doctor Daily Availability
+# ===================================================================
+class DoctorSchedule(models.Model):
+    doctorid = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='schedules')
+    slotid = models.ForeignKey(Slot, on_delete=models.CASCADE, related_name='schedules')
+    date = models.DateField(db_index=True)
+    status = models.BooleanField(default=True)  # True = Available
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('doctorid', 'slotid', 'date')
+        indexes = [models.Index(fields=['date', 'status'])]
+
+
+# ===================================================================
+# 6. Doctor Leave / Holidays
+# ===================================================================
+class DoctorLeave(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='leaves')
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.doctor} → {self.get_day_of_week_display()} {self.slot}"
-    
-    def get_day_of_week_display(self):
-        return f"{self.day_of_week}"
+        return f"{self.doctor} → Leave {self.start_date}"
 
-# ============================
-# Payment Models
-# ============================
 
+# ===================================================================
+# 7. Patient Appointment
+# ===================================================================
+class Appointment(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+        ('no_show', 'No Show'),
+    )
+
+    patientid = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='appointments')
+    doctorid = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
+    slotid = models.ForeignKey(Slot, on_delete=models.CASCADE)
+    date = models.DateField(db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmed')
+    symptoms = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('doctorid', 'slotid', 'date')
+        ordering = ['-date', 'slotid']
+
+
+# ===================================================================
+# 8. Prescription (Separate & Professional)
+# ===================================================================
+class Prescription(models.Model):
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name='prescription')
+    prescribed_by = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, related_name='prescriptions')
+    medicines = models.TextField()
+    dosage = models.TextField(blank=True)
+    instructions = models.TextField(blank=True)
+    follow_up_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    date_issued = models.DateField(auto_now_add=True)
+    is_sent = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prescription #{self.id} - {self.appointment.patientid}"
+
+
+# ===================================================================
+# 9. Payment & Notifications
+# ===================================================================
 class Payment(models.Model):
-    """
-    Payment records for appointments via RazorPay.
-    """
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
-    fees = models.IntegerField()
-    status = models.BooleanField(default=False)
-    razorpay_pay_order_id = models.CharField(max_length=100, null=True, blank=True)
-    razorpay_pay_payment_id = models.CharField(max_length=100, null=True, blank=True)
-    razorpay_pay_signature_id = models.CharField(max_length=100, null=True, blank=True)
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name='payment')
+    amount = models.PositiveIntegerField()
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    is_paid = models.BooleanField(default=False)
+    paid_at = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return f"Payment for {self.appointment}"
 
-# ============================
-# Chat / Communication Models
-# ============================
+class Notification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-class Chatbot(models.Model):
-    """
-    Chat messages between doctor and patient.
-    """
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    date = models.DateField()
-    time = models.TimeField(auto_now=True)
-    message = models.CharField(max_length=1000)
-    sender = models.CharField(max_length=200)  # Could be 'doctor' or 'patient'
+    class Meta:
+        ordering = ['-created_at']
 
-    def __str__(self):
-        return f"Chat on {self.date} by {self.sender}"
 
-# ============================
-# Feedback / Complaint / Contact Models
-# ============================
-
-# Feedback from patients
+# ===================================================================
+# 10. Feedback & Contact
+# ===================================================================
 class Feedback(models.Model):
-    p_name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=100)
-    rate = models.CharField(max_length=50)
-    message = models.CharField(max_length=200)
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    rating = models.PositiveSmallIntegerField(choices=[(i,i) for i in range(1,6)])
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Feedback from {self.p_name}"
 
-# Complaint from patients
-class Complain(models.Model):
-    patient_name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=100)
-    complain_message = models.CharField(max_length=200)
-
-    def __str__(self):
-        return f"Complain from {self.patient_name}"
-
-# General contact messages (anyone can use)
 class ContactUs(models.Model):
-    name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=100)
-    subject = models.CharField(max_length=50)
-    msg = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"Contact: {self.subject} by {self.name}"
-
-# ============================
-# Other / Optional Models
-# ============================
-
-class Destination(models.Model):
-    """
-    Possibly hospital services/packages.
-    """
-    img = models.ImageField(upload_to='pics', null=True, blank=True)
     name = models.CharField(max_length=100)
-    desc = models.TextField()
-    price = models.IntegerField()
-
-    def __str__(self):
-        return self.name
-
-class ShowAppointment(models.Model):
-    """
-    Additional info per appointment like prescription or chat logs.
-    """
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
-    date = models.DateField()
-    prescription = models.CharField(max_length=1000, null=True, blank=True)
-    chat = models.CharField(max_length=1000, null=True, blank=True)
-
-    def __str__(self):
-        return f"Details for {self.appointment}"
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    replied = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

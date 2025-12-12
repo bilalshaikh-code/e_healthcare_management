@@ -41,7 +41,7 @@
         </div>
         <div class="d-flex align-items-center">
             <a href="{% url 'feedback' %}" class="text-dark me-3"><i class="bi bi-chat-left-text"></i></a>
-            <a href="{% url 'complain' %}" class="text-dark"><i class="bi bi-exclamation-circle"></i></a>
+            <a href="" class="text-dark"><i class="bi bi-exclamation-circle"></i></a>
         </div>
     </div>
     <!-- Topbar End -->
@@ -63,8 +63,6 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'service' %}">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'price' %}">Pricing</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'appointment' %}">Book Appointment</a></li>
 
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -72,7 +70,8 @@
                                 Hello, {{ user.first_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'p_view' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'patient_dashboard' %}">Patient Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'book_appointment' %}">Book Appointment</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
@@ -81,7 +80,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'signin' %}">Login</a></li>
+                                <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
                                 <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                             </ul>
                         </li>

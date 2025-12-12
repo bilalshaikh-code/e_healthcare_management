@@ -52,13 +52,13 @@
                 <h5 class="text-white text-uppercase mb-2 fw-bold">Appointment</h5>
                 <h2 class="display-4 fw-bold mb-4">Make An Appointment Today</h2>
                 <p class="lead mb-4">Book your consultation with our expert doctors. Fast, reliable, and personalized healthcare.</p>
-                <a href="{% url 'appointment' %}" class="btn btn-light rounded-pill py-3 px-5 me-3">Book Appointment</a>
+                <a href="" class="btn btn-light rounded-pill py-3 px-5 me-3">Book Appointment</a>
                 <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill py-3 px-5">Contact Us</a>
             </div>
             <div class="col-lg-6">
                 <div class="bg-white rounded shadow p-4">
                     <h3 class="text-primary text-center mb-4">Quick Appointment</h3>
-                    <form action="{% url 'appointment' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">

@@ -1,0 +1,55 @@
+{% extends 'doctor/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Take Leave / Block Dates</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-5">
+                        <label>Start Date</label>
+                        <input type="date" name="start_date" class="form-control" required min="{{ today }}">
+                    </div>
+                    <div class="col-md-5">
+                        <label>End Date (optional)</label>
+                        <input type="date" name="end_date" class="form-control" min="{{ today }}">
+                        <small class="text-muted">Leave blank for single day</small>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-danger w-100">Block Dates</button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label>Reason (optional)</label>
+                    <input type="text" name="reason" class="form-control" placeholder="e.g., Vacation, Conference, Family Event">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h4 class="mt-4">Your Leave History</h4>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th>Applied On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+            <tr>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date|default:"Single Day" }}</td>
+                <td><small>{{ leave.reason|default:"—" }}</small></td>
+                <td>{{ leave.created_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted">No leave recorded yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

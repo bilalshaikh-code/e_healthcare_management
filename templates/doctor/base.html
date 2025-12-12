@@ -20,25 +20,79 @@
 <body>
     <div class="wrapper">
 
-           <!-- Sidebar -->
-    <div class="sidebar">
-        <h3>HealthPlus</h3>
-        <a href="{% url 'doctor_dashboard' %}" class="nav-link active">
-            <i class="fa fa-home"></i><span> Dashboard</span>
-        </a>
-        <a href="{% url 'doctor_appoinment' %}" class="nav-link">
-            <i class="fa fa-calendar-check"></i><span> Appointments</span>
-        </a>
-        <a href="{% url 'doctor_patients' %}" class="nav-link">
-            <i class="fa fa-user-injured"></i><span> Patients</span>
-        </a>
-        <a href="{% url 'doctor_profile' %}" class="nav-link">
-            <i class="fa fa-user-md"></i><span> Profile</span>
-        </a>
-        <a href="{% url 'logout' %}" class="nav-link">
-            <i class="fa fa-sign-out-alt"></i><span> Logout</span>
-        </a>
-    </div>
+        <!-- Sidebar -->
+        <!-- templates/doctor/sidebar.html -->
+        <div class="sidebar">
+            <h3 class="text-center text-white mb-2 py-3">
+                <i class="fas fa-heartbeat me-2"></i> HealthPlus
+            </h3>
+
+            <nav class="nav flex-column px-3">
+                <!-- Dashboard -->
+                <a href="{% url 'doctor_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Appointments (3 tabs) -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'dongoing dupcoming doutgoing' %}active{% endif %}" 
+                    data-bs-toggle="dropdown" role="button">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Appointments</span>
+                    </a>
+                    <ul class="dropdown-menu shadow border-0">
+                        <li><a class="dropdown-item" href="{% url 'dongoing' %}">Today's & Upcoming</a></li>
+                        <li><a class="dropdown-item" href="{% url 'dupcoming' %}">Future Appointments</a></li>
+                        <li><a class="dropdown-item" href="{% url 'doutgoing' %}">Past Appointments</a></li>
+                    </ul>
+                </div>
+
+                <!-- My Slots -->
+                <a href="{% url 'doctor_slots' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_slots' %}active{% endif %}">
+                    <i class="fas fa-clock"></i>
+                    <span>My Slots</span>
+                </a>
+
+                <!-- Weekly Schedule -->
+                <a href="{% url 'weekly_schedule' %}" class="nav-link {% if request.resolver_match.url_name == 'weekly_schedule' %}active{% endif %}">
+                    <i class="fas fa-calendar-week"></i>
+                    <span>Weekly Schedule</span>
+                </a>
+
+                <!-- Calendar View -->
+                <a href="{% url 'doctor_calendar' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_calendar' %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendar View</span>
+                </a>
+
+                <!-- Take Leave -->
+                <a href="{% url 'take_leave' %}" class="nav-link {% if request.resolver_match.url_name == 'take_leave' %}active{% endif %}">
+                    <i class="fas fa-plane-departure"></i>
+                    <span>Take Leave</span>
+                </a>
+
+                <!-- View Prescriptions -->
+                <a href="{% url 'docprescription' %}" class="nav-link {% if request.resolver_match.url_name == 'docprescription' %}active{% endif %}">
+                    <i class="fas fa-file-prescription"></i>
+                    <span>View Prescriptions</span>
+                </a>
+
+                <hr class="bg-light opacity-25 my-4">
+
+                <!-- Profile -->
+                <a href="{% url 'doctor_profile' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_profile' %}active{% endif %}">
+                    <i class="fas fa-user-md"></i>
+                    <span>My Profile</span>
+                </a>
+
+                <!-- Logout -->
+                <a href="{% url 'logout' %}" class="nav-link text-danger mt-auto">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
 
         <!-- Main Content -->
         <div class="main">

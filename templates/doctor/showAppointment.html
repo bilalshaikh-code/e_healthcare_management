@@ -1,0 +1,155 @@
+<!-- templates/doctor/showAppointment.html -->
+{% extends "doctor/base.html" %}
+{% load static %}
+
+{% block title %}Send Prescription - Dr. {{ user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .patient-info { background: #f8f9fa; border-radius: 10px; }
+    .medicine-row { margin-bottom: 12px; }
+    .remove-medicine { color: #dc3545; cursor: pointer; font-size: 1.3rem; }
+    textarea { min-height: 120px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="mb-0">
+                        Write Prescription
+                    </h3>
+                </div>
+
+                <div class="card-body p-5">
+                    <!-- Patient Info -->
+                    <div class="patient-info p-4 mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Patient Details</h5>
+                                <p class="mb-1"><strong>Name:</strong> <span id="patientName">-</span></p>
+                                <p class="mb-1"><strong>Age:</strong> <span id="patientAge">-</span></p>
+                                <p class="mb-0"><strong>Gender:</strong> <span id="patientGender">-</span></p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <p class="mb-1"><strong>Appointment ID:</strong> <span id="apptIdDisplay">{{ appointment.id|default:"—" }}</span></p>
+                                <p class="mb-1"><strong>Date:</strong> {{ appointment.date|date:"d M Y" }}</p>
+                                <p class="mb-0"><strong>Time:</strong> {{ appointment.slotid.slot_time }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" id="prescriptionForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="Appointment_ID" id="appointmentIdInput" value="{{ appointment.id }}">
+
+                        <!-- Medicines -->
+                        <div class="mb-4">
+                            <h5>Medicines</h5>
+                            <div id="medicineList">
+                                <div class="medicine-row row g-3 align-items-center">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" name="medicine_name" placeholder="Medicine name" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" name="dosage" placeholder="Dosage (e.g., 1 tab daily)">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" name="duration" placeholder="Duration (e.g., 5 days)">
+                                    </div>
+                                    <div class="col-md-1 text-center">
+                                        <span class="remove-medicine" onclick="removeMedicine(this)">x</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addMedicineRow()">
+                                + Add Medicine
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Follow-up Date (optional)</label>
+                                <input type="date" name="follow_up_date" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Additional Instructions</label>
+                                <textarea name="instructions" class="form-control" placeholder="Take after food, drink plenty of water..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Doctor's Notes / Diagnosis</label>
+                            <textarea name="notes" class="form-control" rows="4" placeholder="Clinical findings, diagnosis, advice..."></textarea>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                Send Prescription to Patient
+                            </button>
+                            <a href="{% url 'dongoing' %}" class="btn btn-secondary btn-lg px-5 ms-3">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add new medicine row
+function addMedicineRow() {
+    const container = document.getElementById('medicineList');
+    const row = document.createElement('div');
+    row.className = 'medicine-row row g-3 align-items-center';
+    row.innerHTML = `
+        <div class="col-md-5">
+            <input type="text" class="form-control" name="medicine_name" placeholder="Medicine name" required>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="dosage" placeholder="Dosage">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="duration" placeholder="Duration">
+        </div>
+        <div class="col-md-1 text-center">
+            <span class="remove-medicine" onclick="removeMedicine(this)">x</span>
+        </div>
+    `;
+    container.appendChild(row);
+}
+
+function removeMedicine(btn) {
+    btn.closest('.medicine-row').remove();
+}
+
+// Load patient info via AJAX when page loads (if appt ID present)
+document.addEventListener('DOMContentLoaded', function() {
+    const apptId = "{{ appointment.id|default:'' }}";
+    if (apptId) {
+        fetch("{% url 'get_appointment_info' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: 'appointment_id=' + apptId
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.patientName) {
+                document.getElementById('patientName').textContent = data.patientName;
+                document.getElementById('patientAge').textContent = data.patientAge || '—';
+                document.getElementById('patientGender').textContent = data.patientGender || '—';
+            }
+        });
+    }
+    
+});
+</script>
+{% endblock %}
