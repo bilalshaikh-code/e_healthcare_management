@@ -167,6 +167,19 @@ class Appointment(models.Model):
         unique_together = ('doctorid', 'slotid', 'date')
         ordering = ['-date', 'slotid']
 
+class DoctorReview(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reviews')
+    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(choices=[(1,1),(2,2),(3,3),(4,4),(5,5)])
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('patient', 'appointment')
+
+    def __str__(self):
+        return f"{self.patient} → Dr. {self.doctor} ({self.rating} stars)"
 
 # ===================================================================
 # 8. Prescription (Separate & Professional)
@@ -189,16 +202,8 @@ class Prescription(models.Model):
 
 
 # ===================================================================
-# 9. Payment & Notifications
+# 9. Notifications
 # ===================================================================
-class Payment(models.Model):
-    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name='payment')
-    amount = models.PositiveIntegerField()
-    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
-    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
-    is_paid = models.BooleanField(default=False)
-    paid_at = models.DateTimeField(null=True, blank=True)
-
 
 class Notification(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
@@ -210,6 +215,75 @@ class Notification(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+
+# Add these models at the end of your models.py
+class ChatRoom(models.Model):
+    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='patient_chats')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='doctor_chats')
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='chat')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('patient', 'doctor', 'appointment')
+
+    def __str__(self):
+        return f"Chat: {self.patient} ↔ Dr. {self.doctor.user.get_full_name()}"
+
+
+class ChatMessage(models.Model):
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.sender} → {self.message[:30]}"
+    
+# Add to healthcare/models.py
+
+class LabTestCategory(models.Model):
+    name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=50, default='fa-vial')
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class LabTest(models.Model):
+    category = models.ForeignKey(LabTestCategory, on_delete=models.CASCADE, related_name='tests')
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    fasting_required = models.BooleanField(default=False)
+    sample_type = models.CharField(max_length=100, default="Blood")
+    preparation = models.TextField(blank=True)
+    turnaround_time = models.CharField(max_length=100, default="6-12 hours")
+
+    def __str__(self):
+        return f"{self.name} (₹{self.price})"
+
+class LabBooking(models.Model):
+    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='lab_bookings')
+    tests = models.ManyToManyField(LabTest)
+    appointment_date = models.DateField()
+    appointment_time = models.TimeField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, default='confirmed', choices=[
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled')
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Lab Booking #{self.id} - {self.patient}"
 
 # ===================================================================
 # 10. Feedback & Contact

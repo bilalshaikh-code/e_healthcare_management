@@ -1,0 +1,57 @@
+<!-- Beautiful Lab Booking Page -->
+{% extends "patient/base.html" %}
+{% block title %}Book Lab Tests{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">Book Your Lab Tests</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5>{{ category.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for test in category.tests.all %}
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="tests" value="{{ test.id }}" id="test{{ test.id }}">
+                            <label class="form-check-label" for="test{{ test.id }}">
+                                <strong>{{ test.name }}</strong> - ₹{{ test.price }}
+                                {% if test.fasting_required %}
+                                <span class="badge bg-warning text-dark ms-2">Fasting Required</span>
+                                {% endif %}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <label>Date</label>
+                <input type="date" name="date" class="form-control form-control-lg" required min="{{ today|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-6">
+                <label>Preferred Time</label>
+                <input type="time" name="time" class="form-control form-control-lg" required>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <label>Additional Notes (Optional)</label>
+            <textarea name="notes" class="form-control" rows="3" placeholder="Any special instructions..."></textarea>
+        </div>
+
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-success btn-lg px-5">Book Lab Tests</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

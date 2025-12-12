@@ -1,85 +1,161 @@
+<!-- templates/services.html -->
 {% extends "base/base.html" %}
 {% load static %}
 
 {% block title %}Our Services - HealthPlus Hospital{% endblock %}
 
 {% block extra_css %}
-<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-<link href="{% static 'lib/owlcarousel/assets/owl.theme.default.min.css' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.dist/assets/owl.carousel.min.css" rel="stylesheet">
+<style>
+    .hero-header {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('{% static "img/hero.jpg" %}') center/cover no-repeat;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+    .service-card {
+        transition: all 0.4s ease;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .service-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+    .service-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    .cta-form {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+    .testimonial-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="hero-header bg-primary text-white py-6 text-center">
-    <div class="container p-3">
-        <h1 class="display-3 fw-bold mb-3">Our Services</h1>
-        <p class="lead fs-4">World-Class Medical Care with Advanced Technology & Expert Doctors</p>
+<!-- HERO SECTION -->
+<section class="hero-header text-center">
+    <div class="container">
+        <h1 class="display-2 fw-bold mb-4">Our Services</h1>
+        <p class="lead fs-3 mb-5">Advanced Medical Care with Cutting-Edge Technology</p>
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">50+</h2>
+                <p class="fs-5">Specialized Services</p>
+            </div>
+            <div class="vr bg-white opacity-25"></div>
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">24/7</h2>
+                <p class="fs-5">Emergency Care</p>
+            </div>
+            <div class="vr bg-white opacity-25"></div>
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">100%</h2>
+                <p class="fs-5">Patient-Centric</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- Services Grid -->
+<!-- SERVICES GRID -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Services</h5>
-            <h2 class="fw-bold">Excellent Medical Services</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Our Services</h5>
+            <h2 class="fw-bold mb-4">Comprehensive Healthcare Solutions</h2>
+            <p class="text-muted fs-5">From routine checkups to complex surgeries — we do it all</p>
         </div>
-        <div class="row g-4">
+
+        <div class="row g-5">
             {% for service in services %}
             <div class="col-lg-4 col-md-6">
-                <div class="card shadow-sm h-100 border-0 text-center p-4 d-flex flex-column service-item">
-                    <div class="service-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:90px; height:90px;">
-                        <i class="fa fa-2x {{ service.icon }}"></i>
+                <div class="card service-card h-100 text-center p-5">
+                    <div class="service-icon">
+                        <i class="fas fa-3x {{ service.icon|default:'fa-stethoscope' }} text-white"></i>
                     </div>
-                    <h4 class="mb-3">{{ service.title }}</h4>
-                    <p class="text-muted flex-grow-1">{{ service.description|truncatewords:20 }}</p>
-                    <a href="{% url 'service_detail' service.id %}" class="btn btn-primary rounded-pill mt-3 px-4">Learn More</a>
+                    <h3 class="fw-bold mb-3">{{ service.title }}</h3>
+                    <p class="text-muted mb-4">{{ service.description|truncatewords:30 }}</p>
+                    <a href="#" class="btn btn-primary rounded-pill px-5 mt-auto">
+                        Learn More
+                    </a>
                 </div>
             </div>
             {% empty %}
-            <p class="text-muted text-center py-5">No services available at the moment.</p>
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-notes-medical fa-5x text-muted mb-4"></i>
+                <h4 class="text-muted">Services coming soon!</h4>
+            </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Appointment CTA Section -->
-<section class="py-5 bg-primary text-white">
-    <div class="container py-5">
-        <div class="row gx-5 align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h5 class="text-white text-uppercase mb-2 fw-bold">Appointment</h5>
-                <h2 class="display-4 fw-bold mb-4">Make An Appointment Today</h2>
-                <p class="lead mb-4">Book your consultation with our expert doctors. Fast, reliable, and personalized healthcare.</p>
-                <a href="" class="btn btn-light rounded-pill py-3 px-5 me-3">Book Appointment</a>
-                <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill py-3 px-5">Contact Us</a>
+<!-- QUICK APPOINTMENT CTA -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h5 class="text-primary text-uppercase fw-bold mb-3">Quick Appointment</h5>
+                <h2 class="fw-bold mb-4">Book Your Consultation in 30 Seconds</h2>
+                <p class="lead text-muted mb-4">
+                    No waiting in queues. Choose your doctor, pick a time, and get confirmed instantly.
+                </p>
+                <ul class="list-unstyled fs-5">
+                    <li class="mb-3"><i class="fas fa-check text-success me-3"></i>24/7 Online Booking</li>
+                    <li class="mb-3"><i class="fas fa-check text-success me-3"></i>Verified Doctors Only</li>
+                    <li class="mb-3"><i class="fas fa-check text-success me-3"></i>Instant Confirmation</li>
+                    <li class="mb-3"><i class="fas fa-check text-success me-3"></i>Free Cancellation</li>
+                </ul>
+                <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'login' %}{% endif %}" 
+                   class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                    Book Now
+                </a>
             </div>
             <div class="col-lg-6">
-                <div class="bg-white rounded shadow p-4">
-                    <h3 class="text-primary text-center mb-4">Quick Appointment</h3>
-                    <form action="" method="post">
+                <div class="cta-form">
+                    <h3 class="text-center mb-4 text-primary">Quick Book</h3>
+                    <form method="post" action="{% url 'book_appointment' %}">
                         {% csrf_token %}
                         <div class="row g-3">
-                            <div class="col-12 col-sm-6">
-                                <select class="form-select bg-light border-0" style="height:55px;" name="department">
-                                    <option selected>Choose Department</option>
-                                    <option>Cardiology</option>
-                                    <option>Neurology</option>
-                                    <option>Dermatology</option>
+                            <div class="col-12">
+                                <select name="speciality" class="form-select form-select-lg" required>
+                                    <option value="">Select Speciality</option>
+                                    {% for spec in specialities %}
+                                        <option value="{{ spec.id }}">{{ spec.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="text" class="form-control bg-light border-0" placeholder="Your Name" style="height:55px;" name="name" required>
+                            <div class="col-md-6">
+                                <input type="text" name="patient_name" class="form-control form-control-lg" 
+                                       placeholder="Your Name" value="{{ user.get_full_name|default:'' }}" required>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="email" class="form-control bg-light border-0" placeholder="Your Email" style="height:55px;" name="email" required>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="text" class="form-control bg-light border-0 datetimepicker-input" placeholder="Select Date" style="height:55px;" name="date" required>
+                            <div class="col-md-6">
+                                <input type="tel" name="mobile" class="form-control form-control-lg" 
+                                       placeholder="Mobile Number" value="{{ user.mobile_number|default:'' }}" required>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3 rounded-pill" type="submit">Book Now</button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">
+                                    Find Available Slots
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -89,42 +165,60 @@
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="py-5">
+<!-- TESTIMONIALS -->
+<section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Testimonials</h5>
-            <h2 class="fw-bold">What Our Patients Say</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Testimonials</h5>
+            <h2 class="fw-bold">Trusted by Thousands</h2>
         </div>
+
         <div class="owl-carousel testimonial-carousel">
-            {% for feed in feedback %}
-            <div class="testimonial-item text-center p-4 shadow-sm rounded">
-                <img src="{% static 'img/testimonial-2.jpg' %}" class="rounded-circle mb-3 shadow" width="100" alt="{{ feed.p_name }}">
-                <p class="fst-italic text-muted">"{{ feed.message }}"</p>
-                <hr class="w-25 mx-auto bg-primary">
-                <h5 class="mt-3">{{ feed.p_name }}</h5>
-                <small class="text-primary">{{ feed.email }}</small>
+            {% for fb in feedback|slice:":6" %}
+            <div class="text-center p-4">
+                <div class="testimonial-card mx-auto" style="max-width: 400px;">
+                    <div class="mb-4">
+                        {% for i in "12345" %}
+                            <i class="fas fa-star {% if forloop.counter <= fb.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    <p class="fst-italic fs-5 text-muted mb-4">“{{ fb.message }}”</p>
+                    <h5 class="fw-bold">{{ fb.name }}</h5>
+                    <small class="text-muted">{{ fb.email }}</small>
+                </div>
             </div>
             {% empty %}
-            <div class="text-center py-5 text-muted">No testimonials yet. Be the first!</div>
+            <p class="text-center py-5 text-muted">No testimonials yet</p>
             {% endfor %}
         </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="py-5 bg-gradient text-white text-center" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+    <div class="container py-5">
+        <h2 class="fw-bold mb-4">Experience World-Class Healthcare</h2>
+        <p class="lead mb-5">Join 100,000+ patients who trust HealthPlus</p>
+        <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'register' %}{% endif %}" 
+           class="btn btn-light btn-lg px-5 rounded-pill shadow">
+            Get Started Today
+        </a>
     </div>
 </section>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
 <script>
 $(document).ready(function(){
-    $(".testimonial-carousel").owlCarousel({
+    $('.testimonial-carousel').owlCarousel({
         loop: true,
         margin: 30,
         nav: true,
-        dots: false,
+        dots: true,
         autoplay: true,
-        autoplayTimeout:5000,
+        autoplayTimeout: 6000,
         responsive: {
             0: { items: 1 },
             768: { items: 2 },

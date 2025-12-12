@@ -6,7 +6,10 @@ from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from datetime import date
 from django.contrib import messages
-from healthcare.models import Doctor, DoctorSchedule, Slot, Appointment, DoctorLeave
+from healthcare.models import Doctor, DoctorSchedule, Slot, Appointment, ChatRoom
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 @login_required
 def book_appointment(request):
@@ -56,7 +59,7 @@ def confirm_booking(request):
             messages.error(request, "Slot already booked!")
             return redirect('book_appointment')
 
-        Appointment.objects.create(
+        appointment = Appointment.objects.create(
             patientid=request.user,
             doctorid=doctor,
             slotid=slot,
@@ -64,10 +67,43 @@ def confirm_booking(request):
             symptoms=request.POST.get('symptoms', ''),
             status='confirmed'
         )
+        # After Appointment.objects.create(...)
+        ChatRoom.objects.get_or_create(
+            patient=request.user,
+            doctor=appointment.doctorid,
+            appointment=appointment,
+            defaults={'is_active': True}
+        )
+
+        # SEND CONFIRMATION EMAIL
+        context = {
+            'patient': request.user,
+            'appointment': appointment,
+        }
+        html_message = render_to_string('emails/appointment_confirmation.html', context)
+        plain_message = f"Appointment confirmed with Dr. {doctor.user.get_full_name()} on {appt_date} at {slot.slot_time}"
+
+        send_mail(
+            subject=f"Appointment Confirmed - #{appointment.id}",
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[request.user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+        # Optional: Notify doctor too
+        send_mail(
+            "New Appointment",
+            f"New appointment from {request.user.get_full_name()} on {appt_date} {slot.slot_time}",
+            settings.DEFAULT_FROM_EMAIL,
+            [doctor.user.email],
+        )
+
         # Mark slot as booked
         DoctorSchedule.objects.filter(doctorid=doctor, slotid=slot, date=appt_date).update(status=False)
 
-        messages.success(request, "Appointment booked!")
+        messages.success(request, "Appointment booked & confirmation email sent!")
         return redirect('my_appointments')
 
     return redirect('book_appointment')

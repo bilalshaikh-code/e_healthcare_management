@@ -1,0 +1,54 @@
+HEALTHPLUS HOSPITAL - LAB TEST BOOKING CONFIRMATION
+===================================================
+
+Dear {{ patient.get_full_name|default:"Patient" }},
+
+Thank you for choosing HealthPlus Hospital!  
+Your lab test booking has been successfully confirmed.
+
+────────────────────────────────────
+BOOKING DETAILS
+────────────────────────────────────
+Booking ID        : #{{ booking.id }}
+Booked On         : {{ booking.created_at|date:"d M Y, h:i A" }}
+Test Date & Time  : {{ booking.appointment_date|date:"d M Y" }} at {{ booking.appointment_time|time:"h:i A" }}
+
+────────────────────────────────────
+ORDERED TESTS
+────────────────────────────────────
+{% for test in tests %}
+• {{ test.name }} {% if test.fasting_required %}(Fasting Required){% endif %}    ₹{{ test.price }}
+{% endfor %}
+
+────────────────────────────────────
+TOTAL AMOUNT      : ₹{{ booking.total_amount }}
+Status            : {{ booking.get_status_display|upper }}
+
+{% if booking.notes %}
+────────────────────────────────────
+YOUR NOTES
+────────────────────────────────────
+{{ booking.notes }}
+{% endif %}
+
+────────────────────────────────────
+IMPORTANT INSTRUCTIONS
+────────────────────────────────────
+{% if has_fasting_tests %}
+• Fasting of 8–12 hours is required for some tests.
+• You may drink plain water during fasting.
+{% endif %}
+• Please bring a valid photo ID (Aadhaar/PAN/Driving License).
+• Arrive 15 minutes before your scheduled time.
+• For any changes, contact us at +91-98765 43210
+
+We look forward to serving you!
+
+HealthPlus Lab Team
++91-98765 43210 | lab@healthplus.com
+
+——————————————————————————————
+HealthPlus Hospital
+Your Trusted Healthcare Partner
+Ahmedabad, Gujarat
+© 2025 HealthPlus Hospital

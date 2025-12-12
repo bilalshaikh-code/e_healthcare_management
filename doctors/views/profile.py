@@ -9,7 +9,7 @@ from healthcare.models import Appointment, Prescription
 
 @login_required
 def doctor_profile(request):
-    if request.user.role != 'doctor' or not request.user.doctor_profile.is_verified:
+    if request.user.role != 'doctor':
         messages.error(request, "Access denied.")
         return redirect('home')
 

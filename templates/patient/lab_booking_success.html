@@ -1,0 +1,103 @@
+<!-- templates/patient/lab_booking_success.html -->
+{% extends "patient/base.html" %}
+{% load static %}
+
+{% block title %}Lab Tests Booked Successfully - HealthPlus{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card shadow-lg border-0 rounded-4 text-center">
+                <!-- Success Header -->
+                <div class="card-header bg-success text-white py-5">
+                    <i class="fas fa-check-circle fa-5x mb-4"></i>
+                    <h2 class="fw-bold mb-3">Lab Tests Booked Successfully!</h2>
+                    <p class="lead mb-0 opacity-90">Your appointment has been confirmed</p>
+                </div>
+
+                <div class="card-body p-5">
+                    <!-- Booking Summary -->
+                    <div class="bg-light rounded-4 p-4 mb-5">
+                        <h4 class="text-primary mb-4">Booking Summary</h4>
+                        <div class="row text-start">
+                            <div class="col-md-6 mb-3">
+                                <strong>Booking ID:</strong><br>
+                                <h5 class="text-success">#{{ booking.id }}</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date & Time:</strong><br>
+                                <h5>{{ booking.appointment_date|date:"d M Y" }} at {{ booking.appointment_time|time:"h:i A" }}</h5>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <strong>Tests Booked ({{ booking.tests.count }}):</strong>
+                                <ul class="list-unstyled mt-2">
+                                    {% for test in booking.tests.all %}
+                                    <li class="d-flex justify-content-between py-2 border-bottom">
+                                        <span>
+                                            {{ test.name }}
+                                            {% if test.fasting_required %}
+                                                <span class="badge bg-warning text-dark ms-2">Fasting Required</span>
+                                            {% endif %}
+                                        </span>
+                                        <span>₹{{ test.price }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center bg-primary text-white rounded-3 p-3">
+                                    <h5 class="mb-0">Total Amount</h5>
+                                    <h3 class="mb-0">₹{{ booking.total_amount }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Instructions -->
+                    <div class="alert {% if has_fasting_tests %}alert-warning{% else %}alert-info{% endif %} border-0 rounded-4 p-4 mb-5">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-info-circle me-2"></i> Important Instructions
+                        </h5>
+                        <ul class="text-start mb-0 fs-6">
+                            <li>Bring a valid photo ID (Aadhaar/PAN/Driving License)</li>
+                            <li>Arrive 15 minutes before your scheduled time</li>
+                            {% if has_fasting_tests %}
+                            <li class="text-danger fw-bold">Fasting of 8–12 hours is required (water allowed)</li>
+                            {% else %}
+                            <li>No fasting required</li>
+                            {% endif %}
+                            <li>Report will be emailed within 24 hours</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="{% url 'my_appointments' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                            <i class="fas fa-calendar-check me-2"></i> View Appointments
+                        </a>
+                        <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
+                            <i class="fas fa-home me-2"></i> Back to Dashboard
+                        </a>
+                    </div>
+
+                    <!-- Email Confirmation -->
+                    <div class="mt-5 pt-4 border-top">
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            A confirmation email has been sent to <strong>{{ request.user.email }}</strong>
+                        </p>
+                        <small class="text-muted">Check spam if not in inbox</small>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light py-4">
+                    <p class="mb-0 text-muted">
+                        Need help? Call <strong>+91-98765 43210</strong> or WhatsApp us
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -21,8 +21,7 @@
     <div class="wrapper">
 
         <!-- Sidebar -->
-        <!-- templates/doctor/sidebar.html -->
-        <div class="sidebar">
+        <div class="sidebar" style="overflow-y: auto;">
             <h3 class="text-center text-white mb-2 py-3">
                 <i class="fas fa-heartbeat me-2"></i> HealthPlus
             </h3>
@@ -70,6 +69,13 @@
                 <a href="{% url 'take_leave' %}" class="nav-link {% if request.resolver_match.url_name == 'take_leave' %}active{% endif %}">
                     <i class="fas fa-plane-departure"></i>
                     <span>Take Leave</span>
+                </a>
+
+                <!-- ADD THIS LINE IN YOUR DOCTOR SIDEBAR -->
+                <a href="{% url 'doctor_chat_list' %}" 
+                class="nav-link {% if request.resolver_match.url_name == 'doctor_chat_list' or request.resolver_match.url_name == 'chat_room' %}active{% endif %}">
+                    <i class="fas fa-comments"></i>
+                    <span>Patient Messages {% if chat_rooms.count > 0 %}<span class="badge bg-danger ms-2">{{ chat_rooms.count }}</span>{% endif %}</span>
                 </a>
 
                 <!-- View Prescriptions -->

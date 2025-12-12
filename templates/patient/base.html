@@ -103,8 +103,20 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lab_test_booking' %}">
+                                <i class="fas fa-vials"></i> Lab Tests
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'appointment_history' %}">
                                 <i class="fas fa-history"></i> History
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'patient_chat_list' %}" 
+                            class="nav-link {% if request.resolver_match.url_name == 'patient_chat_list' %}active{% endif %}">
+                                <i class="fas fa-comments"></i>
+                                <span>Chat with Doctor</span>
                             </a>
                         </li>
                     </ul>

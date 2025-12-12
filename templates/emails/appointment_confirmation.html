@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
+        .container { max-width: 650px; margin: auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 40px; text-align: center; }
+        .content { padding: 40px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #e9ecef; text-align: left; padding: 15px; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        .footer { background: #f1f3f5; padding: 30px; text-align: center; color: #666; font-size: 14px; }
+        .btn { display: inline-block; background: #0d6efd; color: white; padding: 14px 30px; text-decoration: none; border-radius: 50px; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>HealthPlus Hospital</h1>
+        <h2>Appointment Confirmed!</h2>
+    </div>
+    <div class="content">
+        <p><strong>Dear {{ patient.get_full_name|default:"Patient" }},</strong></p>
+        <p>Congratulations! Your appointment has been successfully booked.</p>
+
+        <h3>Appointment Details</h3>
+        <table>
+            <tr><th>Appointment ID</th><td>#{{ appointment.id }}</td></tr>
+            <tr><th>Doctor</th><td>Dr. {{ appointment.doctorid.user.get_full_name }}</td></tr>
+            <tr><th>Speciality</th><td>{{ appointment.doctorid.speciality.name }}</td></tr>
+            <tr><th>Date</th><td>{{ appointment.date|date:"l, d F Y" }}</td></tr>
+            <tr><th>Time</th><td>{{ appointment.slotid.slot_time }}</td></tr>
+            <tr><th>Fees</th><td><strong>₹{{ appointment.doctorid.fees }}</strong></td></tr>
+        </table>
+
+        {% if appointment.symptoms %}
+        <p><strong>Your Symptoms:</strong><br>{{ appointment.symptoms }}</p>
+        {% endif %}
+
+        <div style="background:#d1ecf1;padding:20px;border-radius:10px;margin:25px 0;">
+            <strong>Instructions:</strong>
+            <ul>
+                <li>Please arrive 10 minutes early</li>
+                <li>Bring a valid photo ID</li>
+                <li>In case of emergency, call +91-98765 43210</li>
+            </ul>
+        </div>
+
+        <p>We look forward to seeing you!</p>
+        <a href="https://yourwebsite.com" class="btn">View My Appointments</a>
+    </div>
+    <div class="footer">
+        <p>HealthPlus Hospital • Ahmedabad, Gujarat</p>
+        <p>Call: +91-98765 43210 | Email: support@healthplus.com</p>
+        <p>© 2025 HealthPlus Hospital. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

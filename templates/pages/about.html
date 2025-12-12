@@ -1,137 +1,283 @@
+<!-- templates/about.html -->
 {% extends "base/base.html" %}
 {% load static %}
 
 {% block title %}About Us - HealthPlus Hospital{% endblock %}
 
 {% block extra_css %}
-<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-<link href="{% static 'lib/owlcarousel/assets/owl.theme.default.min.css' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" rel="stylesheet">
+<style>
+    .hero-header {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('{% static 'img/about-hero.jpg' %}) center/cover no-repeat;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        transition: transform 0.4s;
+    }
+    .stat-card:hover {
+        transform: translateY(-15px);
+    }
+    .feature-icon {
+        width: 90px;
+        height: 90px;
+        background: #e3f2fd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    .doctor-card {
+        transition: all 0.4s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .doctor-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .search-form {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="hero-header bg-primary text-white py-6 text-center">
-    <div class="container p-3">
-        <h1 class="display-3 fw-bold mb-3">About HealthPlus</h1>
-        <p class="lead fs-4">Exceptional Medical Care for You and Your Family</p>
+<!-- HERO SECTION -->
+<section class="hero-header text-center">
+    <div class="container">
+        <h1 class="display-2 fw-bold mb-4">About HealthPlus</h1>
+        <p class="lead fs-3 mb-5 text-white">Healing Lives with Compassion & Excellence Since 2010</p>
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">15+</h2>
+                <p class="fs-5 text-white">Years of Service</p>
+            </div>
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">500+</h2>
+                <p class="fs-5 text-white">Expert Doctors</p>
+            </div>
+            <div class="text-center">
+                <h2 class="display-4 fw-bold text-warning">100K+</h2>
+                <p class="fs-5 text-white">Happy Patients</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- About Section -->
-<section class="py-5">
+<!-- MISSION & VISION -->
+<section class="py-5 bg-white">
     <div class="container">
-        <div class="row align-items-center gx-5">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="{% static 'img/about.jpg' %}" class="img-fluid rounded shadow" style="object-fit:cover; height:100%;" alt="HealthPlus Hospital">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="p-5 bg-gradient rounded-4 shadow-lg" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <h2 class="fw-bold mb-4">
+                        Our Mission
+                    </h2>
+                    <p class="fs-5">
+                        To provide accessible, affordable, and world-class healthcare with compassion, 
+                        innovation, and a patient-first approach — treating every individual with dignity and respect.
+                    </p>
+                </div>
             </div>
             <div class="col-lg-6">
-                <h5 class="text-primary text-uppercase mb-3 fw-bold">About Us</h5>
-                <h2 class="mb-4 fw-bold">Compassionate Healthcare for Everyone</h2>
-                <p class="text-muted mb-3">
-                    At HealthPlus, we deliver exceptional healthcare with compassion, innovation, and excellence.
-                    Our state-of-the-art facility is equipped with the latest medical technology and staffed by highly qualified professionals.
-                </p>
-                <p class="text-muted mb-4">
-                    From emergency services to routine checkups, our team ensures personalized care at every step.
-                    We believe in building long-term relationships with our patients based on trust and outstanding service.
-                </p>
-
-                <div class="row g-3">
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3 shadow-sm">
-                            <i class="fa fa-user-md fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Doctors</h6>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3 shadow-sm">
-                            <i class="fa fa-procedures fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">24/7 Emergency</h6>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3 shadow-sm">
-                            <i class="fa fa-microscope fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Testing</h6>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3 shadow-sm">
-                            <i class="fa fa-ambulance fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Ambulance</h6>
-                        </div>
-                    </div>
+                <div class="p-5 bg-gradient rounded-4 shadow-lg" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <h2 class="fw-bold mb-4">
+                        Our Vision
+                    </h2>
+                    <p class="fs-5">
+                        To be India's most trusted healthcare brand, setting new standards in medical excellence, 
+                        patient satisfaction, and community wellness.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Doctor Search Section -->
-<section class="py-5 bg-primary text-white text-center">
-    <div class="container py-5">
-        <h5 class="text-uppercase mb-2 fw-bold">Find a Doctor</h5>
-        <h2 class="display-4 fw-bold mb-4">Search Our Healthcare Professionals</h2>
-        <p class="lead mb-4">Choose from our expert team of certified doctors across all specialties</p>
-        <div class="mx-auto" style="max-width: 650px;">
-            <form action="" method="GET" class="input-group rounded overflow-hidden shadow-sm">
-                <select name="department" class="form-select border-0" style="height:60px;">
-                    <option selected>All Departments</option>
-                    <option>Cardiology</option>
-                    <option>Neurology</option>
-                    <option>Pediatrics</option>
-                    <option>Orthopedics</option>
+<!-- WHY CHOOSE US -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase fw-bold">Why Choose Us</h5>
+            <h2 class="fw-bold">Excellence in Every Detail</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-award fa-3x text-primary"></i>
+                    </div>
+                    <h4>Certified Excellence</h4>
+                    <p class="text-muted">NABH Accredited & ISO Certified</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-clock fa-3x text-primary"></i>
+                    </div>
+                    <h4>24/7 Emergency</h4>
+                    <p class="text-muted">Always here when you need us</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-microscope fa-3x text-primary"></i>
+                    </div>
+                    <h4>Advanced Diagnostics</h4>
+                    <p class="text-muted">Latest MRI, CT, Lab & Pathology</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-4">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h4>Expert Team</h4>
+                    <p class="text-muted">500+ qualified specialists</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS SECTION -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h2 class="display-4 fw-bold mb-2">50K+</h2>
+                    <p class="mb-0 fs-5">Patients Treated</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h2 class="display-4 fw-bold mb-2">98%</h2>
+                    <p class="mb-0 fs-5">Patient Satisfaction</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h2 class="display-4 fw-bold mb-2">24/7</h2>
+                    <p class="mb-0 fs-5">Emergency Support</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h2 class="display-4 fw-bold mb-2">15+</h2>
+                    <p class="mb-0 fs-5">Years of Trust</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DOCTOR SEARCH -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase fw-bold">Find Your Doctor</h5>
+            <h2 class="fw-bold">Search Our Expert Team</h2>
+        </div>
+        <div class="search-form">
+            <form method="GET" action="{% url 'doctor_search' %}" class="input-group input-group-lg shadow">
+                <select name="speciality" class="form-select border-0" style="max-width:250px;">
+                    <option value="">All Specialities</option>
+                    {% for spec in specialities %}
+                        <option value="{{ spec.id }}">{{ spec.name }}</option>
+                    {% endfor %}
                 </select>
-                <input type="text" name="q" class="form-control border-0" placeholder="Doctor name or specialty..." style="height:60px;">
-                <button type="submit" class="btn btn-dark px-4" style="height:60px;">
-                    <i class="fa fa-search me-2"></i>Search
+                <input type="text" name="q" class="form-control border-0" placeholder="Search doctor name..." aria-label="Search">
+                <button class="btn btn-primary px-5" type="submit">
+                    Search
                 </button>
             </form>
         </div>
     </div>
 </section>
 
-<!-- Our Doctors Section -->
+<!-- OUR DOCTORS -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Our Doctors</h5>
-            <h2 class="fw-bold">Qualified Healthcare Professionals</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Our Specialists</h5>
+            <h2 class="fw-bold">Meet Our Expert Doctors</h2>
         </div>
-        <div class="owl-carousel team-carousel">
-            {% for doctor in AddDr %}
-            <div class="card border-0 shadow-sm overflow-hidden">
-                <img src="{{ doctor.image.url }}" class="card-img-top" style="height:300px; object-fit:cover;" alt="{{ doctor.username }}">
-                <div class="card-body text-center p-3">
-                    <h5 class="fw-bold">{{ doctor.username }}</h5>
-                    <p class="text-primary mb-1">{{ doctor.speciality }}</p>
-                    <small class="text-muted d-block"><i class="fa fa-map-marker-alt"></i> {{ doctor.address }}</small>
-                    <small class="text-muted d-block"><i class="fa fa-graduation-cap"></i> {{ doctor.degree }}</small>
-                    <small class="text-muted d-block"><i class="fa fa-dollar-sign"></i> ${{ doctor.fees }} Consultation</small>
-                    <a href="{% url 'appointment' %}?doctor={{ doctor.id }}" class="btn btn-primary btn-sm rounded-pill mt-3 px-4">Book Appointment</a>
+
+        <div class="owl-carousel doctor-carousel">
+            {% for doctor in doctors %}
+            <div class="text-center p-3">
+                <div class="card doctor-card shadow-sm">
+                    {% if doctor.user.image %}
+                        <img src="{{ doctor.user.image.url }}" class="card-img-top" style="height:300px; object-fit:cover;" alt="Dr. {{ doctor.user.get_full_name }}">
+                    {% else %}
+                        <img src="{% static 'img/login_logo.jpeg' %}" class="card-img-top" style="height:300px; object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="fw-bold">Dr. {{ doctor.user.get_full_name }}</h5>
+                        <p class="text-primary mb-2">{{ doctor.speciality.name }}</p>
+                        <p class="small text-muted mb-3">
+                            {{ doctor.degree }} • {{ doctor.experience_years }}+ years exp.
+                        </p>
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            {% for i in "12345" %}
+                                <i class="fas fa-star {% if forloop.counter <= doctor.rating|floatformat:0 %}text-warning{% else %}text-muted{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'login' %}{% endif %}" 
+                           class="btn btn-primary rounded-pill w-100">
+                            Book Appointment
+                        </a>
+                    </div>
                 </div>
             </div>
             {% empty %}
-            <p class="text-muted text-center py-5">No doctors available at the moment.</p>
+            <p class="text-center text-muted py-5">No doctors available</p>
             {% endfor %}
         </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="py-5 bg-gradient text-white text-center" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+    <div class="container py-5">
+        <h2 class="fw-bold mb-4">Your Health Journey Starts Here</h2>
+        <p class="lead mb-5">Join thousands who trust HealthPlus for their healthcare needs</p>
+        <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'register' %}{% endif %}" 
+           class="btn btn-light btn-lg px-5 rounded-pill shadow">
+            Get Started Today
+        </a>
     </div>
 </section>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
 <script>
 $(document).ready(function(){
-    $(".team-carousel").owlCarousel({
+    $('.doctor-carousel').owlCarousel({
         loop: true,
-        margin: 20,
+        margin: 30,
         nav: true,
-        dots: false,
+        dots: true,
         autoplay: true,
-        autoplayTimeout:5000,
+        autoplayTimeout: 5000,
         responsive: {
             0: { items: 1 },
             768: { items: 2 },

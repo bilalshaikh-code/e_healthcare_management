@@ -1,94 +1,127 @@
+<!-- templates/home.html -->
 {% extends "base/base.html" %}
 {% load static %}
 
-{% block title %}Home - HealthPlus Hospital{% endblock %}
+{% block title %}HealthPlus - Best Hospital in India{% endblock %}
 
 {% block extra_css %}
-<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-<link href="{% static 'lib/owlcarousel/assets/owl.theme.default.min.css' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.assets/owl.theme.default.min.css" rel="stylesheet">
+<style>
+    .hero-header {
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url('{% static "img/hero.jpg" %}') center/cover no-repeat;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+    .service-card, .doctor-card {
+        transition: all 0.4s ease;
+        border: none;
+    }
+    .service-card:hover, .doctor-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+    .doctor-img {
+        height: 280px;
+        object-fit: cover;
+        border-radius: 12px 12px 0 0;
+    }
+    .star-rating {
+        color: #ffc107;
+    }
+    .btn-cta {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="hero-header bg-primary text-white py-6">
+<!-- HERO SECTION -->
+<section class="hero-header">
     <div class="container">
         <div class="row align-items-center">
-            <div class="p-5 col-lg-7 text-center text-lg-start">
-                <h5 class="text-uppercase text-light mb-3 fw-bold">Welcome To HealthPlus</h5>
-                <h1 class="display-4 fw-bold mb-4">Your Trusted Healthcare Solution</h1>
-                <p class="lead mb-4">Expert care, advanced facilities, and personalized services for your health and well-being.</p>
-                <div>
-                    <a href="" class="btn btn-light rounded-pill py-2 px-4 me-3">Book Appointment</a>
-                    <a href="#doctors" class="btn btn-outline-light rounded-pill py-2 px-4">Find Doctor</a>
+            <div class="col-lg-7 text-center text-lg-start">
+                <h5 class="text-uppercase text-warning mb-3 fw-bold">
+                    <i class="fas fa-heartbeat me-2"></i> Welcome to HealthPlus
+                </h5>
+                <h1 class="display-3 text-white mb-4">
+                    Your Health,<br>Our Priority
+                </h1>
+                <p class="lead mb-5 fs-5">
+                    Trusted by thousands. Advanced care. 24/7 emergency. Book instantly.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'login' %}{% endif %}" 
+                       class="btn btn-warning btn-cta shadow-lg">
+                        <i class="fas fa-calendar-check me-2"></i> Book Appointment
+                    </a>
+                    <a href="#doctors" class="btn btn-outline-light btn-cta">
+                        <i class="fas fa-user-md me-2"></i> Find a Doctor
+                    </a>
                 </div>
             </div>
-            {% comment %} <div class="col-lg-5 text-center mt-4 mt-lg-0">
-                <img src="{% static 'img/hero-doctor.png' %}" class="img-fluid" alt="Doctor">
-            </div> {% endcomment %}
         </div>
     </div>
 </section>
 
-<!-- About Section -->
-<section class="py-5">
+<!-- ABOUT SECTION -->
+<section class="py-5 bg-white">
     <div class="container">
-        <div class="row align-items-center gx-5">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="{% static 'img/about.jpg' %}" class="img-fluid rounded shadow" alt="About HealthPlus">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <img src="{% static 'img/about.jpg' %}" class="img-fluid rounded-4 shadow-lg" alt="HealthPlus Hospital">
             </div>
             <div class="col-lg-6">
-                <h5 class="text-primary text-uppercase mb-3 fw-bold">About Us</h5>
-                <h2 class="mb-4 fw-bold">Compassionate Care for Your Health</h2>
-                <p class="text-muted mb-4">We provide world-class healthcare with experienced doctors, advanced technology, and a patient-first approach. Your health is our top priority.</p>
-                <div class="row g-3">
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3">
-                            <i class="fa fa-user-md fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Doctors</h6>
+                <h5 class="text-primary text-uppercase fw-bold mb-3">About HealthPlus</h5>
+                <h2 class="fw-bold mb-4">Healing with Care & Excellence</h2>
+                <p class="text-muted fs-5 mb-4">
+                    For over 15 years, HealthPlus has been delivering world-class healthcare with compassion, advanced technology, and a patient-first approach.
+                </p>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-primary fw-bold">500+</h3>
+                            <p class="text-muted">Expert Doctors</p>
                         </div>
                     </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3">
-                            <i class="fa fa-procedures fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Emergency</h6>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3">
-                            <i class="fa fa-microscope fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Testing</h6>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="bg-light rounded-circle p-3">
-                            <i class="fa fa-ambulance fa-2x text-primary mb-2"></i>
-                            <h6 class="mb-0">Ambulance</h6>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-primary fw-bold">50K+</h3>
+                            <p class="text-muted">Happy Patients</p>
                         </div>
                     </div>
                 </div>
+
+                <a href="#services" class="btn btn-primary rounded-pill px-5 py-3">Explore Services</a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Services Section -->
-<section class="py-5 bg-light">
+<!-- SERVICES SECTION -->
+<section class="py-5 bg-light" id="services">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Services</h5>
-            <h2 class="fw-bold">What We Offer</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Our Services</h5>
+            <h2 class="fw-bold">Comprehensive Healthcare Solutions</h2>
         </div>
+
         <div class="row g-4">
             {% for service in services|slice:":6" %}
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm service-card text-center p-4">
-                    <div class="mb-3">
-                        <i class="fa fa-3x {{ service.icon }} text-primary"></i>
+                <div class="card service-card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width:80px;height:80px;">
+                        <i class="fas fa-2x {{ service.icon|default:'fa-stethoscope' }}"></i>
                     </div>
-                    <h5 class="fw-bold">{{ service.title }}</h5>
-                    <p class="text-muted">{{ service.description|truncatewords:20 }}</p>
-                    <a href="{% url 'service_detail' service.id %}" class="btn btn-primary rounded-pill mt-3">Learn More</a>
+                    <h4 class="fw-bold">{{ service.title }}</h4>
+                    <p class="text-muted">{{ service.description|truncatewords:25 }}</p>
+                    <a href="#" class="btn btn-outline-primary rounded-pill mt-auto">Learn More</a>
                 </div>
             </div>
             {% endfor %}
@@ -96,22 +129,44 @@
     </div>
 </section>
 
-<!-- Pricing Section -->
-<section class="py-5">
+<!-- DOCTORS SECTION -->
+<section class="py-5" id="doctors">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Packages</h5>
-            <h2 class="fw-bold">Health Programs</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Expert Team</h5>
+            <h2 class="fw-bold">Meet Our Doctors</h2>
+            <p class="text-muted">Highly qualified specialists dedicated to your care</p>
         </div>
-        <div class="owl-carousel price-carousel">
-            {% for package in dests %}
-            <div class="card border-0 shadow-sm overflow-hidden text-center">
-                <img src="{{ package.img.url }}" class="card-img-top" alt="{{ package.name }}">
-                <div class="card-body p-4">
-                    <h4 class="text-primary">{{ package.name }}</h4>
-                    <h3 class="mb-3">${{ package.price }}<small class="text-muted fs-6">/ Year</small></h3>
-                    <p class="text-muted">{{ package.desc|truncatewords:15 }}</p>
-                    <a href="{% url 'appointment' %}" class="btn btn-primary rounded-pill mt-2 px-4 py-2">Apply Now</a>
+
+        <div class="owl-carousel doctor-carousel">
+            {% for doctor in doctors %}
+            <div class="text-center px-3">
+                <div class="card doctor-card border-0 shadow-sm overflow-hidden">
+                    {% if doctor.user.image %}
+                        <img src="{{ doctor.user.image.url }}" class="doctor-img" alt="Dr. {{ doctor.user.get_full_name }}">
+                    {% else %}
+                        <img src="{% static 'img/login_logo.jpeg' %}" class="doctor-img" alt="Doctor">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-1">Dr. {{ doctor.user.get_full_name }}</h5>
+                        <p class="text-primary mb-2">{{ doctor.speciality.name }}</p>
+                        <div class="star-rating mb-2">
+                            {% with rating=doctor.rating|floatformat:0 %}
+                                {% for i in "12345" %}
+                                    <i class="fas fa-star {% if forloop.counter <= rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                                {% endfor %}
+                            {% endwith %}
+                            <small class="ms-2 text-muted">({{ doctor.total_reviews }} reviews)</small>
+                        </div>
+                        <p class="mb-3">
+                            <i class="fas fa-stethoscope text-primary"></i> {{ doctor.degree }}<br>
+                            <i class="fas fa-rupee-sign text-success"></i> {{ doctor.fees }}/consultation
+                        </p>
+                        <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'login' %}{% endif %}" 
+                           class="btn btn-primary rounded-pill w-100">
+                            Book Now
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -119,71 +174,64 @@
     </div>
 </section>
 
-<!-- Doctors Section -->
-<section class="py-5 bg-light" id="doctors">
+<!-- TESTIMONIALS SECTION -->
+<section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Our Doctors</h5>
-            <h2 class="fw-bold">Meet Our Experts</h2>
+            <h5 class="text-primary text-uppercase fw-bold">Testimonials</h5>
+            <h2 class="fw-bold">What Our Patients Say</h2>
         </div>
-        <div class="owl-carousel team-carousel">
-            {% for doctor in AddDr %}
-            <div class="card border-0 shadow-sm overflow-hidden">
-                <img src="{{ doctor.image.url }}" class="card-img-top" style="height:300px; object-fit:cover;" alt="{{ doctor.username }}">
-                <div class="card-body text-center p-3">
-                    <h5 class="fw-bold">{{ doctor.username }}</h5>
-                    <p class="text-primary mb-1">{{ doctor.speciality }}</p>
-                    <small class="text-muted d-block"><i class="fa fa-map-marker-alt"></i> {{ doctor.address }}</small>
-                    <small class="text-muted d-block"><i class="fa fa-graduation-cap"></i> {{ doctor.degree }}</small>
-                    <small class="text-muted d-block"><i class="fa fa-dollar-sign"></i> ${{ doctor.fees }}</small>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
 
-<!-- Testimonials Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h5 class="text-primary text-uppercase mb-2 fw-bold">Testimonials</h5>
-            <h2 class="fw-bold">What Patients Say</h2>
-        </div>
         <div class="owl-carousel testimonial-carousel">
-            {% for item in feedback %}
-            <div class="card border-0 shadow-sm p-4 text-center">
-                <img src="{% static 'img/testimonial-2.jpg' %}" class="rounded-circle mb-3 mx-auto d-block" width="100" alt="Patient">
-                <p class="fst-italic text-muted">“{{ item.message }}”</p>
-                <hr class="w-50 mx-auto">
-                <h5 class="fw-bold">{{ item.p_name }}</h5>
-                <small class="text-muted">{{ item.email }}</small>
+            {% for fb in feedback|slice:":6" %}
+            <div class="text-center p-4">
+                <div class="bg-white rounded-4 shadow p-5">
+                    <div class="mb-4">
+                        {% for i in "12345" %}
+                            <i class="fas fa-star star-rating {% if forloop.counter <= fb.rating %}text-warning{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    <p class="fst-italic fs-5 text-muted mb-4">“{{ fb.message }}”</p>
+                    <h5 class="fw-bold">{{ fb.name }}</h5>
+                    <small class="text-muted">{{ fb.email }}</small>
+                </div>
             </div>
             {% empty %}
-            <p class="text-muted text-center">No testimonials yet.</p>
+            <p class="text-center text-muted py-5">No testimonials yet. Be the first!</p>
             {% endfor %}
         </div>
+    </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-4">Ready to Take Care of Your Health?</h2>
+        <p class="lead mb-4">Book an appointment with our expert doctors today</p>
+        <a href="{% if user.is_authenticated %}{% url 'book_appointment' %}{% else %}{% url 'login' %}{% endif %}" 
+           class="btn btn-light btn-lg px-5 rounded-pill shadow">
+            <i class="fas fa-calendar-alt me-2"></i> Book Now
+        </a>
     </div>
 </section>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
 <script>
 $(document).ready(function(){
-    $(".price-carousel, .team-carousel, .testimonial-carousel").owlCarousel({
-        loop:true,
-        margin:20,
-        nav:true,
-        dots:false,
-        autoplay:true,
-        autoplayTimeout:5000,
-        responsive:{
-            0:{ items:1 },
-            576:{ items:1 },
-            768:{ items:2 },
-            992:{ items:3 }
+    $('.doctor-carousel, .testimonial-carousel').owlCarousel({
+        loop: true,
+        margin: 30,
+        nav: true,
+        dots: true,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        responsive: {
+            0: { items: 1 },
+            768: { items: 2 },
+            992: { items: 3 }
         }
     });
 });

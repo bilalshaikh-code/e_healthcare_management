@@ -1,0 +1,12 @@
+<h2>Lab Test Booking Confirmed!</h2>
+<p>Dear {{ patient.get_full_name }},</p>
+<p>Your lab tests have been successfully booked:</p>
+<ul>
+{% for test in tests %}
+    <li>{{ test.name }} - ₹{{ test.price }}</li>
+{% endfor %}
+</ul>
+<p><strong>Total: ₹{{ booking.total_amount }}</strong></p>
+<p><strong>Date:</strong> {{ booking.appointment_date }} at {{ booking.appointment_time }}</strong></p>
+<p>We’ll see you soon!</p>
+<p>— HealthPlus Lab Team</p>

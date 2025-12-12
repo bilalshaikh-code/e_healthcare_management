@@ -69,7 +69,10 @@ def doctor_appointment_detail(request, appt_id):
     )
     
     # Get prescription if exists
-    prescription = Prescription.objects.get(appointment=appointment.id)
+    try:    
+        prescription = Prescription.objects.get(appointment=appointment.id)
+    except Prescription.DoesNotExist:
+        prescription = None
 
     context = {
         'appt': appointment,

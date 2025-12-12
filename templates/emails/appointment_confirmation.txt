@@ -1,0 +1,27 @@
+HEALTHPLUS HOSPITAL - APPOINTMENT CONFIRMATION
+
+Dear {{ patient.get_full_name|default:"Patient" }},
+
+Your appointment has been confirmed!
+
+Appointment ID: #{{ appointment.id }}
+Doctor        : Dr. {{ appointment.doctorid.user.get_full_name }}
+Speciality    : {{ appointment.doctorid.speciality.name }}
+Date          : {{ appointment.date|date:"d M Y" }} ({{ appointment.date|date:"l" }})
+Time          : {{ appointment.slotid.slot_time }}
+Fees          : ₹{{ appointment.doctorid.fees }}
+
+{% if appointment.symptoms %}
+Your Symptoms: {{ appointment.symptoms }}
+{% endif %}
+
+Instructions:
+• Arrive 10 minutes early
+• Bring valid ID proof
+• Emergency? Call +91-98765 43210
+
+We look forward to seeing you!
+
+HealthPlus Hospital
+Ahmedabad, Gujarat
++91-98765 43210

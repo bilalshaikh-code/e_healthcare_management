@@ -1,0 +1,33 @@
+<!-- templates/doctor/chat_list.html -->
+{% extends "doctor/base.html" %}
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Patient Messages</h2>
+    <div class="row g-4">
+        {% for room in chat_rooms %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:60px;height:60px;">
+                            {{ room.patient.first_name.0 }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ room.patient.get_full_name }}</h6>
+                            <small class="text-muted">Appt: {{ room.appointment.date|date:"d M" }} • {{ room.appointment.slotid.slot_time }}</small>
+                        </div>
+                    </div>
+                    <a href="{% url 'chat_room' room.id %}" class="btn btn-primary w-100">
+                        Open Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No active chats</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

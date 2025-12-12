@@ -1,0 +1,78 @@
+<!-- templates/chat/room.html -->
+{% extends user.role|add:"/base.html" %}
+{% block title %}Chat with {{ other_person.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                Chat with {{ other_person.get_full_name }}
+                {% if user.role == 'doctor' %}
+                (Patient)
+                {% else %}
+                (Dr. {{ other_person.get_full_name }})
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body d-flex flex-column" style="height: 70vh;">
+            <div id="messages" class="flex-grow-1 overflow-auto p-3 mb-3">
+                {% for msg in messages %}
+                <div class="d-flex {% if msg.sender == user %}justify-content-end{% else %}justify-content-start{% endif %} mb-3">
+                    <div class="p-3 rounded-3 {% if msg.sender == user %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 70%;">
+                        <strong>{{ msg.sender.get_full_name }}</strong><br>
+                        {{ msg.message }}
+                        <small class="d-block text-end mt-1 opacity-75">
+                            {{ msg.timestamp|time:"H:i" }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <form id="chatForm" class="d-flex gap-2">
+                <input type="hidden" id="roomId" value="{{ room.id }}">
+                <input type="text" id="messageInput" class="form-control form-control-lg" placeholder="Type a message..." autocomplete="off">
+                <button type="submit" class="btn btn-primary btn-lg px-4">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const roomId = document.getElementById('roomId').value;
+
+document.getElementById('chatForm').onsubmit = function(e) {
+    e.preventDefault();
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    fetch("{% url 'send_message' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: 'room_id=' + roomId + '&message=' + encodeURIComponent(message)
+    }).then(() => {
+        input.value = '';
+        loadMessages();
+    });
+};
+
+function loadMessages() {
+    fetch(`/chat/${roomId}/`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.getElementById('messages').innerHTML = doc.getElementById('messages').innerHTML;
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+}
+
+setInterval(loadMessages, 5000); // Auto-refresh every 5 seconds
+loadMessages(); // Initial load
+</script>
+{% endblock %}

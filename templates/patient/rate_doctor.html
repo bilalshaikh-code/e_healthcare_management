@@ -1,0 +1,63 @@
+<!-- templates/patient/rate_doctor.html -->
+{% extends "patient/base.html" %}
+{% block title %}Rate Your Doctor{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-4 text-center">
+                <div class="card-header bg-primary text-white py-5">
+                    <h3>How was your experience with</h3>
+                    <h2 class="fw-bold">Dr. {{ doctor.user.get_full_name }}</h2>
+                    <p class="mb-0 opacity-90">
+                        {{ appointment.date|date:"d M Y" }} • {{ appointment.slotid.slot_time }}
+                    </p>
+                </div>
+
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-5">
+                            <label class="form-label fs-4 fw-bold">Rate the Doctor</label>
+                            <div class="star-rating d-inline-block fs-1">
+                                {% for i in "54321" %}
+                                <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" required {% if forloop.counter == 1 %}checked{% endif %}>
+                                <label for="star{{ i }}" class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Your Review (Optional)</label>
+                            <textarea name="comment" class="form-control form-control-lg" rows="4" 
+                                      placeholder="Share your experience..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill shadow">
+                                Submit Rating
+                            </button>
+                            <a href="{% url 'my_appointments' %}" class="btn btn-outline-secondary rounded-pill">
+                                Skip for now
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.star-rating { direction: rtl; display: inline-block; }
+.star-rating input { display: none; }
+.star-rating label { color: #ddd; cursor: pointer; font-size: 3.5rem; }
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label { color: #ffc107; }
+</style>
+{% endblock %}

@@ -22,7 +22,7 @@ def showAppointment(request):
             is_sent=True
         )
         messages.success(request, "Prescription sent!")
-        return redirect('showAppointment')
+        return redirect('doctor_dashboard')
     appointment = None
     try:
         appt_id = request.GET.get('appt')

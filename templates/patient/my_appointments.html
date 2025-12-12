@@ -60,6 +60,15 @@
                                         Cancel
                                     </button>
                                     {% endif %}
+                                    {% if appt.status == 'completed' and not appt.review.exists %}
+                                    <a href="{% url 'rate_doctor' appt.id %}" class="btn btn-sm btn-warning">
+                                        Rate Doctor
+                                    </a>
+                                {% elif appt.review.exists %}
+                                    <span class="text-success small">
+                                        You rated {{ appt.review.first.rating }} stars
+                                    </span>
+                                {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -111,6 +120,7 @@
                             <th>Time</th>
                             <th>Status</th>
                             <th>Prescription</th>
+                            <th>Rate Doctor</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,6 +137,17 @@
                                     </a>
                                 {% else %}
                                     <span class="text-muted">Not issued yet</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if appt.status == 'completed' and not appt.review.exists %}
+                                    <a href="{% url 'rate_doctor' appt.id %}" class="btn btn-sm btn-warning">
+                                        Rate Doctor
+                                    </a>
+                                {% elif appt.review.exists %}
+                                    <span class="text-success small">
+                                        You rated {{ appt.review.first.rating }} stars
+                                    </span>
                                 {% endif %}
                             </td>
                         </tr>
