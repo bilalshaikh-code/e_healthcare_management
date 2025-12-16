@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from healthcare.models import Appointment, ChatRoom, ChatMessage, Doctor
 
-@login_required
+@login_required(login_url="login")
 def doctor_chat_list(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -18,7 +18,7 @@ def doctor_chat_list(request):
         'chat_rooms': chat_rooms
     })
 
-@login_required
+@login_required(login_url="login")
 def chat_room(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
 
@@ -31,7 +31,7 @@ def chat_room(request, room_id):
         })
     return redirect('home')
 
-@login_required
+@login_required(login_url="login")
 def send_message(request):
     if request.method == 'POST':
         room_id = request.POST['room_id']

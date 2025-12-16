@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from healthcare.models import Appointment
 
-@login_required
+@login_required(login_url="login")
 def patient_dashboard(request):
     if request.user.role != 'patient':
         return redirect('home')

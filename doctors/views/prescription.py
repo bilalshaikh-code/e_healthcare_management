@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from healthcare.models import Appointment, Prescription, Doctor
 
-@login_required
+@login_required(login_url="login")
 def showAppointment(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -31,12 +31,12 @@ def showAppointment(request):
         ...
     return render(request, 'doctor/showAppointment.html',{'appointment': appointment})
 
-@login_required
+@login_required(login_url="login")
 def docprescription(request):
     prescriptions = Prescription.objects.filter(prescribed_by=request.user.doctor_profile).select_related('appointment__patientid')
     return render(request, 'doctor/docpres.html', {'puser': prescriptions})
 
-@login_required
+@login_required(login_url="login")
 def get_appointment_info(request):
     if request.method == 'POST':
         appt_id = request.POST.get('appointment_id')

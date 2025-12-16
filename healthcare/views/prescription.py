@@ -2,12 +2,12 @@ import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-# from weasyprint import HTML
-from django.conf import settings
+from xhtml2pdf import pisa
 from django.contrib.auth.decorators import login_required
 from healthcare.models import Prescription
+from io import BytesIO
 
-@login_required
+@login_required(login_url="login")
 def my_prescriptions(request):
     if request.user.role != 'patient':
         return redirect('home')
@@ -22,7 +22,7 @@ def my_prescriptions(request):
         'prescriptions': prescriptions
     })
 
-@login_required
+@login_required(login_url="login")
 def prescription_detail(request, pk):
     prescription = None
     try:
@@ -31,17 +31,28 @@ def prescription_detail(request, pk):
         ...
     return render(request, 'patient/prescription_detail.html', {'prescription': prescription})
 
-@login_required
+@login_required(login_url="login")
 def download_prescription_pdf(request, pk):
-    # if os.name == 'nt':  # Windows fix
-    #     os.add_dll_directory(r'C:\Program Files\GTK3-Runtime Win64\bin')
+    prescription = get_object_or_404(
+        Prescription, 
+        id=pk, 
+        appointment__patientid=request.user
+    )
 
-    # prescription = get_object_or_404(Prescription, id=pk, appointment__patientid=request.user)
-    # html_string = render_to_string('patient/prescription_pdf.html', {'prescription': prescription, 'user': request.user})
-    # html = HTML(string=html_string, base_url=request.build_absolute_uri())
-    # pdf = html.write_pdf()
+    # Render HTML template to string
+    html = render_to_string('patient/prescription_pdf.html', {
+        'prescription': prescription,
+        'patient': request.user,
+    })
 
-    # response = HttpResponse(pdf, content_type='application/pdf')
-    # response['Content-Disposition'] = f'attachment; filename="prescription_{prescription.id}.pdf"'
-    # return response
-    ...
+    # Create PDF
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        filename = f"Prescription_{prescription.id}_{prescription.date_issued.strftime('%d-%m-%Y')}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    else:
+        return HttpResponse("Error generating PDF", status=500)

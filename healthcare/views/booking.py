@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 
-@login_required
+@login_required(login_url="login")
 def book_appointment(request):
     if request.user.role != 'patient':
         return redirect('home')
@@ -47,7 +47,7 @@ def get_available_slots(request):
     except:
         return JsonResponse({'error': 'Invalid data'}, status=400)
 
-@login_required
+@login_required(login_url="login")
 def confirm_booking(request):
     if request.method == "POST":
         doctor = get_object_or_404(Doctor, id=request.POST['doctor_id'])

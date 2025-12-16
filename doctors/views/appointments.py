@@ -5,7 +5,7 @@ from healthcare.models import Appointment, Doctor, Prescription
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-@login_required
+@login_required(login_url="login")
 def doctor_appointments_view(request, period='ongoing'):
     """
     Shared view for ongoing / upcoming / past appointments
@@ -57,7 +57,7 @@ def dupcoming(request):
 def doutgoing(request):
     return doctor_appointments_view(request, 'past')
 
-@login_required
+@login_required(login_url="login")
 def doctor_appointment_detail(request, appt_id):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -81,7 +81,7 @@ def doctor_appointment_detail(request, appt_id):
     }
     return render(request, 'doctor/appointment_detail.html', context)
 
-@login_required
+@login_required(login_url="login")
 @require_POST
 def mark_appointment_complete(request, appt_id):
     """

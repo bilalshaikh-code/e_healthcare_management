@@ -62,7 +62,7 @@ def login_view(request):
             if user.role == 'patient':
                 return redirect('patient_dashboard')
             elif user.role == 'doctor':
-                if user.doctor_profile.is_verified:
+                if Doctor.objects.get(user=user.id).is_verified:
                     return redirect('doctor_dashboard')
                 else:
                     messages.warning(request, "Your doctor account is pending approval.")

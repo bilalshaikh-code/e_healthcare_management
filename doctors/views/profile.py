@@ -7,7 +7,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.db import transaction
 from healthcare.models import Appointment, Prescription
 
-@login_required
+@login_required(login_url="login")
 def doctor_profile(request):
     if request.user.role != 'doctor':
         messages.error(request, "Access denied.")

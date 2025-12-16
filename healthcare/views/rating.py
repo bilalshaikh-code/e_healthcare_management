@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.utils import timezone
 from healthcare.models import Appointment, DoctorReview
 
-@login_required
+@login_required(login_url="login")
 def rate_doctor(request, appointment_id):
     if request.user.role != 'patient':
         return redirect('home')

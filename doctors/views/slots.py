@@ -4,7 +4,7 @@ from datetime import date
 from healthcare.models import DoctorSchedule, Appointment, Doctor
 from django.contrib import messages
 
-@login_required
+@login_required(login_url="login")
 def doctor_slots(request):
     if request.user.role != 'doctor' :
         return redirect('home')

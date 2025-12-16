@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from datetime import date, timedelta
 from healthcare.models import DoctorWeeklySchedule, Doctor, DoctorLeave, DoctorSchedule, Slot, Appointment
 
-@login_required
+@login_required(login_url="login")
 def weekly_schedule(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -31,7 +31,7 @@ def weekly_schedule(request):
         'days': ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
     })
 
-@login_required
+@login_required(login_url="login")
 def take_leave(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -49,7 +49,7 @@ def take_leave(request):
     leaves = DoctorLeave.objects.filter(doctor=doctor).order_by('-start_date')
     return render(request, 'doctor/take_leave.html', {'leaves': leaves})
 
-@login_required
+@login_required(login_url="login")
 def doctor_calendar(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -66,7 +66,7 @@ def doctor_calendar(request):
     }
     return render(request, 'doctor/calendar.html', context)
 
-@login_required
+@login_required(login_url="login")
 def calendar_events_api(request):
     if request.user.role != 'doctor':
         return JsonResponse([])

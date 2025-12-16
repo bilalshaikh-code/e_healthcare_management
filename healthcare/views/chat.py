@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from healthcare.models import ChatRoom, Appointment
 
-@login_required
+@login_required(login_url="login")
 def patient_chat_list(request):
     if request.user.role != 'patient':
         return redirect('home')

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from healthcare.models import Appointment, DoctorSchedule
 
-@login_required
+@login_required(login_url="login")
 def my_appointments(request):
     if request.user.role != 'patient':
         return redirect('home')
@@ -19,7 +19,7 @@ def my_appointments(request):
         'today': today
     })
 
-@login_required
+@login_required(login_url="login")
 def cancel_appointment(request, appt_id):
     appt = get_object_or_404(Appointment, id=appt_id, patientid=request.user)
     if appt.date < timezone.now().date():
@@ -31,7 +31,7 @@ def cancel_appointment(request, appt_id):
         messages.success(request, "Appointment cancelled")
     return redirect('my_appointments')
 
-@login_required
+@login_required(login_url="login")
 def appointment_history(request):
     if request.user.role != 'patient':
         return redirect('home')

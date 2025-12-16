@@ -6,7 +6,7 @@ from datetime import date, timedelta
 import json
 from django.http import JsonResponse
 
-@login_required
+@login_required(login_url="login")
 def doctor_dashboard(request):
     if request.user.role != 'doctor':
         return redirect('home')
@@ -143,7 +143,7 @@ def doctor_dashboard(request):
 
     return render(request, 'doctor/dashboard.html', context)
 
-@login_required
+@login_required(login_url="login")
 def doctor_patient(request):
     if request.user.role != 'doctor':
         return redirect('home')

@@ -8,7 +8,7 @@ from django.conf import settings
 from datetime import datetime
 from healthcare.models import LabTest, LabTestCategory, LabBooking
 
-@login_required
+@login_required(login_url="login")
 def lab_test_booking(request):
     if request.user.role != 'patient':
         return redirect('home')
